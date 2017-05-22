@@ -1,32 +1,23 @@
-# vue-threejs
+Adelaide Hills Wine Region
+===
 
-> \[WIP\] [Vue][vue] bindings for [Three.js][threejs]
+Urban & Public
+---
 
-> Migrated from [react-threejs](https://github.com/fritx/react-threejs)
+This is the repository for an embeddable interactive map for [Adelaide Hills Wine Region](http://adelaidehillswine.com.au).
 
-<img width="400" src="https://github.com/fritx/react-threejs/raw/dev/debugging.jpg">
+**Staging site:** 
+[http:ahwr-map.surge.sh](AHWR on surge)
 
-```js
-import VueThreejs from 'vue-threejs'
-Vue.use(VueThreejs)
-```
+**Production site:** 
+[http:ahwr-map.surge.sh](embeddable as iframe. (same as staging))
 
-```vue
-<template>
-  <renderer :size="{ w: 600, h: 400 }">
-    <scene>
-      <camera :position="{ z: 15 }"></camera>
-      <object3d :obj="mesh" :position="{ y: -200 }"></object3d>
-    </scene>
-  </renderer>
-</template>
-```
+**Firebase Console**
+[https://console.firebase.google.com/u/0/project/ahwr-e58a9/database]https://console.firebase.google.com/u/0/project/ahwr-e58a9/database
 
-**Study Notes**
+**Mapbox Style**
+[Mapbox Sharing URL (no editing)](https://api.mapbox.com/styles/v1/edanweis/cj2iddj93001k2rph61u9lw6f.html?title=true&access_token=pk.eyJ1IjoiZWRhbndlaXMiLCJhIjoiY2lmMTVtdWQ0MDRsOHNkbTV2OXd3cDNwNiJ9.MxWj73wGNEvrPSjsh6TJjw#11.5/-34.980547/138.887153/0)
 
-- [v-ref is not working with <template> element](https://github.com/vuejs/vue/issues/681#issuecomment-75802646)
-- [Can I use a compoent inherit other compoent?](https://github.com/vuejs/Discussion/issues/354#issuecomment-133019536)
+*Get permissions for changing styles, firebase, etc.)*
 
-[react-threejs]: https://github.com/fritx/react-threejs
-[threejs]: https://github.com/mrdoob/three.js
-[vue]: https://github.com/vuejs/vue
+© Urban&Public
