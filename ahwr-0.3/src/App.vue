@@ -1,0 +1,805 @@
+<template>
+
+  <div id="app" class="app-container">
+  
+  <transition-group name="slide">
+   
+      <!-- {{ winery.properties.name }} -->
+      
+      <div id="info-container" class="information winery" v-for="(winery, key, index) in data" v-if="winery.properties.id == currentSelected.properties.id" :key="key">
+      <div class="images">
+        <div @error="getRandomNum" :style='{backgroundImage : "url(http://www.adelaidehillswine.com.au/images/users/photos/"+randomNum+".jpg)"}' class="winery-img-bg"></div>
+      </div>
+      <div class="winery-container">
+          <div class="winery-name">{{ winery.properties.name }}<span class="winery-region">{{ winery.properties.region }}</span></div>
+          
+          <div class="winery-desc">{{ winery.properties.desc }}</div>
+          <div class="winery-where"><span class="label">Where</span>{{ winery.properties.where }}<div class="winery-tel"><span class="label">T</span>{{ winery.properties.tel }}</div></div>
+          
+          <div class="winery-open"><span class="label">Open</span>{{ winery.properties.open }}</div>
+          <a target="_blank" :href='"http://"+winery.properties.website' class="winery-website">{{ winery.properties.website }}</a>
+      </div>
+
+      
+    </div>
+    
+    <!-- <div v-else :key="key">asdf</div> -->
+
+    </transition-group>
+    <v-container :class="['controls', 'container', {'active':sparklingSwitchVisible}]">
+        <v-row>
+          <v-col xs12 md12 >
+            <v-card class="white elevation-7" style="border-radius: 30px;">
+              <v-card-text style="padding-top: 0px !important">
+                <v-switch :class='["switch",{"active": sparklingTrail}]' label="Sparkling Trail" primary v-model="sparklingTrail" light @click.native="toggleSparklingSwitch()"/>
+              </v-card-text>
+            </v-card>
+          </v-col>
+          </v-row>
+          </v-container>
+  <sheet ref="sheet" class="sheet" @resized="resizedSheet" startingWidth="800">
+    <mapbox ref="map" access-token='pk.eyJ1IjoiZWRhbndlaXMiLCJhIjoiY2lmMTVtdWQ0MDRsOHNkbTV2OXd3cDNwNiJ9.MxWj73wGNEvrPSjsh6TJjw'
+    
+    :map-options='{
+      style: "mapbox://styles/edanweis/cj2iddj93001k2rph61u9lw6f",
+      maxBounds: [[138.1381,-35.5400], [139.7050,-34.4558]],
+      center: [138.7333, -34.9141],
+       zoom: 13,
+       hash:true,
+
+    }'
+
+    :navControl='{
+      show: false
+      }'
+    
+    :geolocate-control='{
+      show: false, 
+      position: "top-left"
+    }'
+
+    
+    
+    @map-resize='mapResized'
+
+    @map-movestart='mapMoveStart'
+
+    @map-move='mapMoving'
+
+    @map-click="mapClicked"
+
+    @map-mousemove="mapMouseMoved"
+
+    @map-load="mapLoaded"
+
+    @map-zoom="mapZooming"
+
+    @map-moveend="mapMoveEnd"
+
+    @map-dataloading="dataLoading"
+
+    >
+      
+    </mapbox>
+    
+      <!-- <v-switch label="Sparkling Wine Trail" v-model="sparklingTrail" /> -->
+      <!-- <v-switch value="false" v-model="sparklingTrail" input-value="false" primary light /> -->
+
+      <!-- <div class="switch-label">Sparkling Wine Trail</div> -->
+      <!-- <v-card class="white  elevation-1 controls">
+       <v-card-text>
+        <v-switch class="switch" primary v-model="sparklingTrail" light></v-switch>
+        <span class="switch-label">Sparkling Wine Trail</span>
+        </v-card-text>
+      </v-card> -->
+
+
+    <div  :class='["circle", {"off": circle.off == true ? true : false}, {"active": circle.o == 1 ? true : false}, {"inactive": circle.o == 0 ? true : false}]' :style='{"transform": "translateX("+circle.x+"px) translateY("+circle.y+"px)", "width": circle.r*2+"px", "height": circle.r*2+"px"}'></div>
+    <div  :class='["multiply","circle", {"off": circle.off == true ? true : false}, {"active": circle.o == 1 ? true : false}, {"inactive": circle.o == 0 ? true : false}]' :style='{"transform": "translateX("+circle.x+"px) translateY("+circle.y+"px)", "width": circle.r*2+"px", "height": circle.r*2+"px"}'></div>
+    <!-- <div  :class='["big","circle", {"active": circle.o == 1 ? true : false}, {"inactive": circle.o == 0 ? true : false}]' :style='{"transform": "translateX("+circle.x+"px) translateY("+circle.y+"px)", "width": circle.r*2+"px", "height": circle.r*2+"px"}'></div> -->
+    </sheet>
+    
+    
+
+  </div>
+</template>
+
+<script>
+import Mapbox from 'mapbox-gl-vue'
+import Vue from 'vue'
+import Firebase from 'firebase'
+
+import { mapMutations, mapGetters } from 'vuex'
+import Vuetify from 'vuetify'
+Vue.use(Vuetify)
+import Sheet from './components/Sheet'
+var dynamics = require('dynamics.js')
+
+var geodist = require('geodist')
+var _=require('lodash')
+require('./stylus/main.styl')
+
+
+
+let config = require('./firebase-config.js')
+
+let app = Firebase.initializeApp(config)
+let db = app.database()
+let dataRef = db.ref('data')
+
+function map_range(value, low1, high1, low2, high2) {
+    return low2 + (high2 - low2) * (value - low1) / (high1 - low1);
+}
+
+function onlyUnique(value, index, self) { 
+    return self.indexOf(value) === index;
+}
+
+export default {
+  name: 'app',
+  firebase: {
+    // data: dataRef // this is done manually below due to VueFire not returning native arrays?
+  },
+  components: {
+    Mapbox,
+    Sheet
+  },
+  mounted(){
+    var self = this
+    dataRef.once('value').then(function(snapshot) {
+      for (var i = snapshot.val().length - 1; i >= 0; i--) {
+        self.data.push(snapshot.val()[i])
+      }
+    }).then(function(){
+        self.loadData()
+        // self.moveCircle()
+    })
+
+  },
+  data () {
+    return {
+      data: [],
+      map: null,
+      sparklingTrailLayer: null,
+      sparklingTrail: false,
+      // filters: {
+      //   sparkling: ["in", "name", "Bird in Hand", "Deviation Road", "Golding", "Howard", "Longview", "Petaluma", "O'leary Walker", "Mt Lofty Range", "Sidewood", "Tapanappa", "The Lane"],
+      // },
+      currentSelected: [],
+      sparklingSwitchVisible: false,
+      randomNum: 2,
+      moveCircleActive: true,
+      circle:{
+        x: 0,
+        y: 0,
+        o: 0,
+        r: 50,
+        off: true
+      }
+    }
+  },
+  computed:{
+    
+    ...mapGetters([
+      'getWinerySelected',
+      ])
+
+  },
+  methods:{
+    
+    ...mapMutations([
+      'addSelectedWinery'
+      ]),
+    resizedSheet: function(){
+      // triggers the map.resize() event of mapbox, because we can't (?) select the DOM map element, unless using #ref="blah"?
+      window.dispatchEvent(new Event('resize'));
+    },
+
+    toggleSparklingSwitch(e){
+      var f = []
+      for (var i = this.data.length - 1; i >= 0; i--) {
+        if (this.data[i].properties.trails.includes("sparkling")){
+          f.push(this.data[i].properties.id)
+        }
+      }
+      //prepend the first two filter commands to array
+      f.unshift("in", "id")
+
+      this.sparklingSwitchVisible = true//!this.sparklingSwitchVisible
+      this.circle.o = 0;
+      if (this.sparklingTrail){
+        this.map.setFilter('wineries', f)
+        this.map.setFilter('triangles', f)
+      } else{
+        this.map.setFilter('wineries', null);
+        this.map.setFilter('triangles', null);  
+      }
+    },
+    getRandomNum(){
+      var r = Math.floor(Math.random()*(140-7+1)+7);
+      this.randomNum = r
+      return r
+    },
+    mapResized(){
+      // console.log('resized')
+    },
+
+
+    mapClicked(map, e) {
+      
+          const features = map.queryRenderedFeatures(e.point, {
+              layers: ['triangles', 'wineries']
+          });        
+          var self = this
+          if (features[0]){
+           map.flyTo({
+            center: features[0].geometry.coordinates,
+            zoom: self.flytoZoom(self.map),
+            bearing: self.easeBearing(map),
+          });
+
+          this.randomNum = this.getRandomNum()
+        }
+      
+
+    },
+
+    easeBearing(map){
+      if(map.getBearing() > 0){
+        return -5
+      } else {
+        return 5
+      }
+    },
+
+    flytoZoom(map){
+      // var z =[-0.5, 0.5]
+      return map.getZoom() + 0.5 // z[Math.floor(Math.random()*z.length)];
+
+    },
+    mapMouseMoved(map, e) {
+      if(map.isSourceLoaded('winery-label')){
+        const features = map.queryRenderedFeatures(e.point, {
+            layers: ['wineries', 'triangles']
+        });
+        map.getCanvas().style.cursor = (features.length) ? 'pointer' : '';
+      }
+    },
+
+    mapMoveStart(e, map){
+      this.circle.o = 0;
+      this.sparklingSwitchVisible = false
+    },
+
+    mapMoveEnd(e){
+      this.circle.o = 1;
+      var self = this;
+      // setTimeout(function() {this.moveCircle(self.e)}, 500);
+      // console.log(this.currentSelected)
+      this.moveCircleActive = false;
+      this.currentSelected = this.nearest
+      // console.log(this.currentSelected)
+      this.randomNum = this.getRandomNum()
+
+      this.moveCircle(e)
+      this.zoomCircle(e)
+    },
+
+    mapMoving(e){
+        this.moveCircle(e, map)  
+      if(this.moveCircleActive){
+      }
+      // console.log('moving')
+      
+    },
+    mapLoaded(e){
+      this.zoomCircle(e)
+      this.moveCircle(e)
+
+      this.map = e      
+      var self = this
+      var r = []
+      // console.log(this.data)     
+    },
+
+    dataLoading(e){
+      // console.log(e.loaded)
+    },
+
+    loadData(){
+      this.map.addSource('winery-label', {
+          'type': 'geojson',
+          'data': {
+            'type': 'FeatureCollection',
+            'features': this.data
+          }
+      })
+
+      this.map.addLayer({
+        "id": "wineries",
+        "type": "symbol",
+        "source": "winery-label",
+        "filter": [
+            "==",
+            "$type",
+            "Point"
+        ],
+        "layout": {
+            "text-line-height": 1,
+            "text-size": {
+                "base": 1.3,
+                "stops": [
+                    [
+                        4,
+                        6
+                    ],
+                    [
+                        14,
+                        23
+                    ]
+                ]
+            },
+            "text-allow-overlap": true,
+            "text-font": [
+                "Roboto Medium",
+                "Arial Unicode MS Regular"
+            ],
+            "text-justify": "left",
+            "visibility": "visible",
+            "text-offset": [
+                1,
+                0.1
+            ],
+            "text-anchor": "left",
+            "text-field": "{label}",
+            "text-max-width": 15
+        },
+        "paint": {
+            "text-color": "#65132C"
+        }
+      })
+
+      this.map.addLayer({
+        "id": "triangles",
+        "type": "symbol",
+        "source": "winery-label",
+        "filter": [
+            "==",
+            "$type",
+            "Point"
+        ],
+        "layout": {
+            "text-size": {
+                "base": 1,
+                "stops": [
+                    [
+                        8,
+                        14
+                    ],
+                    [
+                        14,
+                        15
+                    ]
+                ]
+            },
+            "text-font": [
+                "Knockout 29 Junior Liteweight"
+            ],
+            "visibility": "visible",
+            "icon-size": {
+                "base": 0.8,
+                "stops": [
+                    [
+                        8,
+                        0.1
+                    ],
+                    [
+                        15,
+                        1.1
+                    ]
+                ]
+            },
+            "text-offset": [
+                0,
+                -0.2
+            ],
+            "icon-image": "triangle",
+            "icon-allow-overlap": true
+        },
+        "paint": {
+            "text-color": "hsl(0, 0%, 100%)",
+            "icon-opacity": 0.7
+        }
+      })
+    },
+
+
+    zoomCircle: function(e){
+      if (e.getZoom() < 9){
+        this.circle.r = 0  
+      } else{
+        this.circle.r = map_range(e.getZoom(), 15, 9, 50, 15 )  
+      }
+    },
+    mapZooming(e){
+      this.zoomCircle(e)
+      
+    },
+
+    moveCircle: function(e){
+      if(e.isSourceLoaded('winery-label')){
+        var features = e.queryRenderedFeatures({ layers: ['triangles']})
+        // console.log(features.length)
+        if(features.length > 0){
+          this.circle.off = false
+          var f = _.uniqBy(features, 'properties.id');
+          var nearest = null
+          var centerLat = e.getCenter().lat
+          var centerLng = e.getCenter().lng
+          var dist = 999999999999
+          for (var i = f.length - 1; i >= 0; i--) {
+              var newDist = geodist([centerLat, centerLng], [f[i].geometry.coordinates[1], f[i].geometry.coordinates[0]], {format: false, unit: 'meters'})
+              
+              if(!nearest){
+                nearest = f[i]
+              }
+              if( newDist < dist){
+                nearest = f[i]
+                dist = newDist
+              }
+          }
+          
+          var nearest_screen_coordinates = e.project([nearest.geometry.coordinates[0], nearest.geometry.coordinates[1]])
+
+        var nx = parseInt(nearest_screen_coordinates.x - this.circle.r*1.02)
+        var ny = parseInt(nearest_screen_coordinates.y - this.circle.r*1.02)
+
+        this.circle.x = nx
+        this.circle.y = ny
+        if(this.moveCircleActive){
+          this.circle.o = 1;  
+        }
+
+        if(nearest !== this.currentSelected){
+          this.nearest = nearest
+        }
+        } else{
+          // console.log("circle be gone")
+          this.circle.o = 0;
+          this.currentSelected = null
+          this.circle.off = true
+        }
+
+        
+      } else{
+        this.circle.off = true
+      }
+    }
+  }
+}
+
+
+</script>
+
+<style>
+
+body, html{
+  margin: 0;
+  height: 100%;
+  overflow: hidden;
+}
+
+.noselect{
+   user-select: none;
+}
+
+.app-container{
+  background-color: #f1f1f1;
+  display: flex;
+  flex-direction: row-reverse;
+  /*must have to stop jumping when clicking*/
+  justify-content: flex-end; 
+  /*dont align items center to avoid vertical jumping*/
+  /*align-items: center;*/
+  /*flex-wrap: wrap;*/
+}
+
+#app {
+  font-family: 'Raleway', Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.sheet{
+  position: relative;
+  float: left;
+  display: inline;
+  /*width: 80%;*/
+  background-color: #c6cad2;
+}
+
+
+.circle{
+  position: absolute;
+  display: block;
+  /*border: 2px dotted white;*/
+  border-radius: 50%;
+  background-color: rgba(255,255,255,0.6);
+  mix-blend-mode: overlay;
+  z-index: 0;
+  /*transition: 1s ease-in-out;*/
+  /*transition-property: transform;*/
+  /*transition-delay: 300ms;*/
+  transition: transform 0.1s ease-out, background-color 0.1s ease-out, opacity 0.2s ease-out, box-shadow 0.1s ease-out;
+  left: 0;
+  top: 0;
+
+  box-shadow: 0px 0px 60px 0px rgba(0,0,0,0.3);
+
+  /*box-sizing: content-box;*/
+  /*mix-blend-mode: overlay;*/
+  /*background-clip: border-box;*/
+  pointer-events: none;
+
+}
+
+.mulitply.off, .circle.off{
+  /*opacity: 0 !important;*/
+  display: none;
+}
+
+.multiply{
+  /*box-shadow: 0px 0px 20px 0px #000;*/
+  /*opacity: 0 !important;*/
+}
+
+.circle.active{
+  /*transition: opacity 1s ease-out;*/
+  /*transition: opacity 0;*/
+  /*transform: scale(2);*/
+
+  opacity: 1;
+  /*transition-delay: 400;*/
+}
+
+.inactive{
+  box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.25) !important;
+  transition: opacity 0;
+  background-color: rgba(255,255,255,0.3);  
+
+  /*transform-origin: unset !important;
+  transform: scale(2) !important;*/
+  /*opacity: 0.2;*/
+  /*transition-delay: 300;*/
+}
+
+.mapboxgl-ctrl-bottom-right{
+  right: 40px !important;
+}
+
+
+.multiply{
+  mix-blend-mode: multiply;
+  box-shadow: 0px 0px 16px 0px rgba(0,0,0,0.5);
+  z-index: 0;
+}
+
+.big{
+  mix-blend-mode: normal;
+  box-shadow: 0px 0px 556px 300px rgba(0,0,0,0.2);
+  overflow: hidden;
+  z-index: 0;
+}
+
+
+
+.information{
+  position: relative;
+  z-index: 1;
+  /*height: 100vh;*/
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  align-content: space-between;
+  padding-right: 5vw;
+  padding-left: 5vw;
+  background-color: #f1f1f1;
+
+}
+
+
+*::selection{
+  color: rgba(0,0,0,0.8);
+  background-color: rgba(0,0,0,0.1);
+
+}
+
+.winery-container{
+display: block;
+position: relative;
+text-align: left;
+padding: 1em 0;
+border-top: dotted #5AAB6A 1px;
+border-bottom: dotted #5AAB6A 1px;
+/*background-color: red;*/
+}
+
+.winery-container > div{
+  position: relative;
+  display: block;
+  float: left;
+  width: 100%;
+  margin: 0.3em 0;
+}
+
+.winery-container .label{
+  font-weight: 700;
+  user-select: none;
+  cursor: default;
+  padding-right: 0.4em;
+  display: inline-block;
+
+
+}
+
+.winery-name{
+  font-size: calc(10px + 1.5vw);
+  /*font-family: 'Roboto';*/
+  text-transform: uppercase;
+  font-weight: 700;
+  
+}
+
+.winery-region{
+display: inline;
+font-size: calc(10px + 0.6vw);
+color: rgba(0,0,0,0.75);
+padding-left: 0.5em;
+text-transform: uppercase;
+font-weight: 400;
+}
+
+
+.winery-desc{
+  /*float: right;*/
+  line-height: 1.35em;
+}
+
+.winery-where{
+  
+}
+
+.winery-tel{
+  width: auto !important;
+  display: inline;
+  padding-left: 0.6em;
+  white-space: nowrap;
+  /*float: right;*/
+}
+
+.winery-open{
+  margin-top: 0 !important;
+}
+
+.winery-website{
+  color: #61ad69 !important;
+  display: inline-block;
+  font-weight: 700;
+  margin-top: 1em !important;
+  text-decoration: none;
+  color: unset;
+  border-bottom: dotted transparent 1px;
+
+}
+
+.winery-website:hover{
+  border-bottom: dotted #5AAB6A 1px;
+}
+
+.info-container{
+  display: block;
+  /*width:100%;*/
+  position: relative;
+  /*float: left;*/
+  /*clear: both;*/
+}
+
+
+.images{
+  display: block;
+  width: 100%;
+}
+
+.winery-img{
+  width: 100% !important;
+  margin: 5vh 0;
+  max-height: 33vh;
+  height: 10vh;
+}
+
+.winery-img-bg{
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+  margin: 5vh 0;
+  height: 30vh;
+  max-height: 25vh;
+
+}
+
+.controls{
+  position: absolute !important;
+  z-index: 1;
+  left: -200px;
+  top: 0;
+  min-width: 290px;
+  zoom: 0.8;  
+  transition: all 345ms cubic-bezier(0.0, 0.0, 0.2, 1);
+}
+
+.controls.active {
+  left: -17px !important;
+  transition: all 230ms cubic-bezier(0.0, 0.0, 0.2, 1);
+}
+
+.switch {
+
+  height: 10px;
+  left: 0px;
+  top: 7px;
+  
+}
+
+.switch.active *{
+  color: #cb5a4d !important;
+}
+
+.switch label{
+  user-select: none;
+}
+
+.switch label:after{
+  content:"local_bar";
+  position: relative;
+  font-family:'Material Icons';
+  font-size: 1.6em;
+  line-height: 18px;
+  top: 7px;
+  padding-left: 15px;
+  /*color: rgba(0,0,0,0.56);*/
+  /*text-overflow: visible;*/
+}
+
+.switch-label{
+  /*float: right;*/
+}
+
+/*/////////////////*/
+
+/* Enter and leave animations can use different */
+/* durations and timing functions.              */
+.slide-enter-active {
+  
+  /*mine*/
+  /*transition: all 355ms cubic-bezier(.29,.09,.17,1);*/
+
+  /*google*/
+  transition: all 355ms cubic-bezier(0.0, 0.0, 0.2, 1);
+  transition-delay: .3s;
+}
+.slide-leave-active {
+  /*mine*/
+  /*transition: all 235ms cubic-bezier(0.19, 1, 0.22, 1);*/
+  /*google*/
+  transition: all 235ms cubic-bezier(0.4, 0.0, 1, 1);
+}
+.slide-enter, .slide-leave-to
+/* .slide-fade-leave-active for <2.1.8 */ {
+  transform: translateX(10px);
+  opacity: 0;
+}
+
+
+</style>
