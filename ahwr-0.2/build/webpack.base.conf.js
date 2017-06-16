@@ -32,7 +32,6 @@ module.exports = {
         loader: 'vue-loader',
         options: vueLoaderConfig
       },
-      { test: /\.styl$/, loader: 'style-loader!css-loader!stylus-loader' },
       {
         test: /\.js$/,
         loader: 'babel-loader',
