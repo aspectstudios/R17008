@@ -47,7 +47,7 @@
       style: "mapbox://styles/edanweis/cj2iddj93001k2rph61u9lw6f",
       maxBounds: [[138.1381,-35.5400], [139.7050,-34.4558]],
       center: [138.7333, -34.9141],
-       zoom: 13,
+       zoom: 10,
        hash:true,
 
     }'
