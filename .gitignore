@@ -1,9 +1,7 @@
-# Exclude node modules
+.DS_Store
 node_modules/
-rhino/
-*.3dm
-*.3dm.rhl
-*.3dmbak
-*.dxf
-*.obj
-*.rvb
+dist/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+**/firebase-config.js
