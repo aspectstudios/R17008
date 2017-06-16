@@ -1,0 +1,9 @@
+# Exclude node modules
+node_modules/
+rhino/
+*.3dm
+*.3dm.rhl
+*.3dmbak
+*.dxf
+*.obj
+*.rvb

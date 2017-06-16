@@ -1,43 +1,46 @@
 <template>
-
   <div id="app" class="app-container">
-  
-  <transition-group name="slide">
-   
-      <!-- {{ winery.properties.name }} -->
-      
-      <div id="info-container" class="information winery" v-for="(winery, key, index) in data" v-if="winery.properties.id == currentSelected.properties.id" :key="key">
-      <div class="images">
-        <div @error="getRandomNum" :style='{backgroundImage : "url(http://www.adelaidehillswine.com.au/images/users/photos/"+randomNum+".jpg)"}' class="winery-img-bg"></div>
-      </div>
-      <div class="winery-container">
-          <div class="winery-name">{{ winery.properties.name }}<span class="winery-region">{{ winery.properties.region }}</span></div>
-          
-          <div class="winery-desc">{{ winery.properties.desc }}</div>
-          <div class="winery-where"><span class="label">Where</span>{{ winery.properties.where }}<div class="winery-tel"><span class="label">T</span>{{ winery.properties.tel }}</div></div>
-          
-          <div class="winery-open"><span class="label">Open</span>{{ winery.properties.open }}</div>
-          <a target="_blank" :href='"http://"+winery.properties.website' class="winery-website">{{ winery.properties.website }}</a>
+    <transition-group name="slide" v-if="data">
+        
+        <div id="info-container" class="information winery" v-for="(winery, key, index) in data" v-if="winery.properties.id == currentSelected.properties.id" :key="key">
+
+        <div class="winery-container">
+            <div class="winery-name">{{ winery.properties.name }}<span class="winery-region">{{ winery.properties.region }}</span></div>
+            
+            <div class="winery-desc">{{ winery.properties.desc }}</div>
+            <div class="winery-where"><span class="label">Where</span>{{ winery.properties.where }}<div class="winery-tel"><span class="label">T</span>{{ winery.properties.tel }}</div></div>
+            
+            <div class="winery-open"><span class="label">Open</span>{{ winery.properties.open }}</div>
+            <a target="_blank" :href='"http://"+winery.properties.website' class="winery-website">{{ winery.properties.website }}</a>
+        </div>
       </div>
 
       
-    </div>
+      <!-- <div v-else id="info-container" class="information winery" >
+
+        <div class="winery-container">
+            <div class="winery-name">Explore</div>
+            
+            <div class="winery-desc">{{ winery.properties.desc }}</div>
+        </div>
+      </div> -->
     
-    <!-- <div v-else :key="key">asdf</div> -->
-
     </transition-group>
+
+
     <v-container :class="['controls', 'container', {'active':sparklingSwitchVisible}]">
         <v-row>
           <v-col xs12 md12 >
             <v-card class="white elevation-7" style="border-radius: 30px;">
               <v-card-text style="padding-top: 0px !important">
-                <v-switch :class='["switch",{"active": sparklingTrail}]' label="Sparkling Trail" primary v-model="sparklingTrail" light @click.native="toggleSparklingSwitch()"/>
+                <v-switch :class='["switch",{"active": sparklingTrail}]' label="Sparkling Trail" primary v-model="sparklingTrail"  @click.native="toggleSparklingSwitch()"/>
               </v-card-text>
             </v-card>
           </v-col>
           </v-row>
           </v-container>
-  <sheet ref="sheet" class="sheet" @resized="resizedSheet" startingWidth="800">
+
+    <sheet ref="sheet" class="sheet" @resized="resizedSheet" startingWidth="800">
     <mapbox ref="map" access-token='pk.eyJ1IjoiZWRhbndlaXMiLCJhIjoiY2lmMTVtdWQ0MDRsOHNkbTV2OXd3cDNwNiJ9.MxWj73wGNEvrPSjsh6TJjw'
     
     :map-options='{
@@ -50,7 +53,7 @@
     }'
 
     :navControl='{
-      show: false
+      show: true
       }'
     
     :geolocate-control='{
@@ -58,8 +61,6 @@
       position: "top-left"
     }'
 
-    
-    
     @map-resize='mapResized'
 
     @map-movestart='mapMoveStart'
@@ -81,51 +82,43 @@
     >
       
     </mapbox>
-    
-      <!-- <v-switch label="Sparkling Wine Trail" v-model="sparklingTrail" /> -->
-      <!-- <v-switch value="false" v-model="sparklingTrail" input-value="false" primary light /> -->
 
-      <!-- <div class="switch-label">Sparkling Wine Trail</div> -->
-      <!-- <v-card class="white  elevation-1 controls">
-       <v-card-text>
-        <v-switch class="switch" primary v-model="sparklingTrail" light></v-switch>
-        <span class="switch-label">Sparkling Wine Trail</span>
-        </v-card-text>
-      </v-card> -->
+
+    <!-- <v-switch label="Sparkling Wine Trail" v-model="sparklingTrail" /> -->
+    <!-- <v-switch value="false" v-model="sparklingTrail" input-value="false" primary light /> -->
+
+    <!-- <div class="switch-label">Sparkling Wine Trail</div> -->
+    <!-- <v-card class="white  elevation-1 controls">
+     <v-card-text>
+      <v-switch class="switch" primary v-model="sparklingTrail" light></v-switch>
+      <span class="switch-label">Sparkling Wine Trail</span>
+      </v-card-text>
+    </v-card> -->
 
 
     <div  :class='["circle", {"off": circle.off == true ? true : false}, {"active": circle.o == 1 ? true : false}, {"inactive": circle.o == 0 ? true : false}]' :style='{"transform": "translateX("+circle.x+"px) translateY("+circle.y+"px)", "width": circle.r*2+"px", "height": circle.r*2+"px"}'></div>
     <div  :class='["multiply","circle", {"off": circle.off == true ? true : false}, {"active": circle.o == 1 ? true : false}, {"inactive": circle.o == 0 ? true : false}]' :style='{"transform": "translateX("+circle.x+"px) translateY("+circle.y+"px)", "width": circle.r*2+"px", "height": circle.r*2+"px"}'></div>
-    <!-- <div  :class='["big","circle", {"active": circle.o == 1 ? true : false}, {"inactive": circle.o == 0 ? true : false}]' :style='{"transform": "translateX("+circle.x+"px) translateY("+circle.y+"px)", "width": circle.r*2+"px", "height": circle.r*2+"px"}'></div> -->
-    </sheet>
-    
-    
 
+
+    </sheet>
   </div>
 </template>
 
 <script>
-import Mapbox from 'mapbox-gl-vue'
 import Vue from 'vue'
-import Firebase from 'firebase'
-
-import { mapMutations, mapGetters } from 'vuex'
 import Vuetify from 'vuetify'
 Vue.use(Vuetify)
-import Sheet from './components/Sheet'
-var dynamics = require('dynamics.js')
-
-var geodist = require('geodist')
-var _=require('lodash')
 require('./stylus/main.styl')
 
+import Mapbox from 'mapbox-gl-vue'
+var dynamics = require('dynamics.js')
+import Sheet from './components/Sheet'
+var geodist = require('geodist')
+var _=require('lodash')
+var db = require('./firebase-db.js')
+var dataRef = db.db.ref('data')
 
 
-let config = require('./firebase-config.js')
-
-let app = Firebase.initializeApp(config)
-let db = app.database()
-let dataRef = db.ref('data')
 
 function map_range(value, low1, high1, low2, high2) {
     return low2 + (high2 - low2) * (value - low1) / (high1 - low1);
@@ -135,36 +128,22 @@ function onlyUnique(value, index, self) {
     return self.indexOf(value) === index;
 }
 
+
 export default {
   name: 'app',
-  firebase: {
-    // data: dataRef // this is done manually below due to VueFire not returning native arrays?
-  },
   components: {
     Mapbox,
     Sheet
   },
-  mounted(){
-    var self = this
-    dataRef.once('value').then(function(snapshot) {
-      for (var i = snapshot.val().length - 1; i >= 0; i--) {
-        self.data.push(snapshot.val()[i])
-      }
-    }).then(function(){
-        self.loadData()
-        // self.moveCircle()
-    })
-
-  },
   data () {
     return {
+      fake: false,
+      dataReady: false,
+      mapReady: false,
       data: [],
       map: null,
       sparklingTrailLayer: null,
       sparklingTrail: false,
-      // filters: {
-      //   sparkling: ["in", "name", "Bird in Hand", "Deviation Road", "Golding", "Howard", "Longview", "Petaluma", "O'leary Walker", "Mt Lofty Range", "Sidewood", "Tapanappa", "The Lane"],
-      // },
       currentSelected: [],
       sparklingSwitchVisible: false,
       randomNum: 2,
@@ -178,18 +157,42 @@ export default {
       }
     }
   },
-  computed:{
-    
-    ...mapGetters([
-      'getWinerySelected',
-      ])
-
+watch: {
+      dataReady: function (dataReady) {
+        console.log('dataReady?', dataReady)
+        if(dataReady && this.mapReady){
+          this.loadData()
+        }
+      },
+      mapReady: function (mapReady) {
+        console.log('mapReady?', mapReady)
+        if(this.dataReady && mapReady){
+          this.loadData()
+        }
+      }
+    },
+  mounted(){
+    var self = this
+    console.log('Fetching Firebase data...')
+    dataRef.once('value').then(function(snapshot) {
+      console.log(String(snapshot.val().length), "wineries successfully downloaded from firebase" )
+      let data = []
+      for (var i = snapshot.val().length - 1; i >= 0; i--) {
+        self.data.push(snapshot.val()[i])
+        data.push(snapshot.val()[i])
+      }
+      return data
+    }).then(function(data){
+        self.dataReady = true
+        // self.loadData(data)
+        // self.moveCircle()
+    })
   },
   methods:{
     
-    ...mapMutations([
-      'addSelectedWinery'
-      ]),
+    // ...mapMutations([
+    //   'addSelectedWinery'
+    //   ]),
     resizedSheet: function(){
       // triggers the map.resize() event of mapbox, because we can't (?) select the DOM map element, unless using #ref="blah"?
       window.dispatchEvent(new Event('resize'));
@@ -210,9 +213,11 @@ export default {
       if (this.sparklingTrail){
         this.map.setFilter('wineries', f)
         this.map.setFilter('triangles', f)
+        this.map.setFilter('triangles-appointment', f)
       } else{
         this.map.setFilter('wineries', null);
         this.map.setFilter('triangles', null);  
+        this.map.setFilter('triangles-appointment', null);  
       }
     },
     getRandomNum(){
@@ -227,21 +232,21 @@ export default {
 
     mapClicked(map, e) {
       
-          const features = map.queryRenderedFeatures(e.point, {
-              layers: ['triangles', 'wineries']
-          });        
-          var self = this
-          if (features[0]){
-           map.flyTo({
-            center: features[0].geometry.coordinates,
-            zoom: self.flytoZoom(self.map),
-            bearing: self.easeBearing(map),
-          });
+      const features = map.queryRenderedFeatures(e.point, {
+          layers: ['triangles', 'wineries', 'triangles-appointment']
+      })      
 
-          this.randomNum = this.getRandomNum()
-        }
-      
-
+      var self = this
+      console.log(features)
+      if (features[0]){
+       map.flyTo({
+        center: (features[0].geometry.coordinates|| [138.7454,-34.9191]),
+        zoom: self.flytoZoom(self.map),
+        // bearing: self.easeBearing(map),
+      });
+      this.randomNum = this.getRandomNum()
+    }
+  
     },
 
     easeBearing(map){
@@ -254,13 +259,13 @@ export default {
 
     flytoZoom(map){
       // var z =[-0.5, 0.5]
-      return map.getZoom() + 0.5 // z[Math.floor(Math.random()*z.length)];
+      return this.map.getZoom() + 0.5 // z[Math.floor(Math.random()*z.length)];
 
     },
     mapMouseMoved(map, e) {
       if(map.isSourceLoaded('winery-label')){
         const features = map.queryRenderedFeatures(e.point, {
-            layers: ['wineries', 'triangles']
+            layers: ['wineries', 'triangles', 'triangles-appointment']
         });
         map.getCanvas().style.cursor = (features.length) ? 'pointer' : '';
       }
@@ -286,27 +291,28 @@ export default {
     },
 
     mapMoving(e){
-        this.moveCircle(e, map)  
+        this.moveCircle(e)  
       if(this.moveCircleActive){
       }
       // console.log('moving')
       
     },
     mapLoaded(e){
-      this.zoomCircle(e)
-      this.moveCircle(e)
-
-      this.map = e      
+      this.map = e
+      this.mapReady = true
       var self = this
-      var r = []
+      // var r = []
       // console.log(this.data)     
     },
 
-    dataLoading(e){
-      // console.log(e.loaded)
+    dataLoading(e, map){
+      // console.log(e, map)
     },
 
     loadData(){
+      console.log('loading data...')
+      // console.log(_.filter(this.data, (o) => o.properties.appointment == false))
+      
       this.map.addSource('winery-label', {
           'type': 'geojson',
           'data': {
@@ -314,6 +320,130 @@ export default {
             'features': this.data
           }
       })
+
+      this.map.addSource('winery-label-triangle', {
+          'type': 'geojson',
+          'data': {
+            'type': 'FeatureCollection',
+            'features': _.filter(this.data, (o) => o.properties.appointment == false) // this.data
+          }
+      })
+
+      this.map.addSource('winery-label-appointment', {
+          'type': 'geojson',
+          'data': {
+            'type': 'FeatureCollection',
+            'features': _.filter(this.data, (o) => o.properties.appointment == true)
+          }
+      })
+
+
+      this.map.addLayer({
+        "id": "triangles",
+        "type": "symbol",
+        "source": "winery-label-triangle",
+        "filter": [
+            "==",
+            "$type",
+            "Point"
+        ],
+        "layout": {
+            "text-size": {
+                "base": 1,
+                "stops": [
+                    [
+                        8,
+                        14
+                    ],
+                    [
+                        14,
+                        15
+                    ]
+                ]
+            },
+            "text-font": [
+                "Knockout 29 Junior Liteweight"
+            ],
+            "visibility": "visible",
+            "icon-size": {
+                "base": 0.8,
+                "stops": [
+                    [
+                        8,
+                        0.1
+                    ],
+                    [
+                        15,
+                        1.1
+                    ]
+                ]
+            },
+            "text-offset": [
+                0,
+                -0.2
+            ],
+            "icon-image": "triangle-filled",
+            "icon-allow-overlap": true
+        },
+        "paint": {
+            "text-color": "hsl(0, 0%, 100%)",
+            "icon-opacity": 0.8
+        }
+      })
+
+      this.map.addLayer({
+        "id": "triangles-appointment",
+        "type": "symbol",
+        "source": "winery-label-appointment",
+        "filter": [
+            "==",
+            "$type",
+            "Point"
+        ],
+        "layout": {
+            "text-size": {
+                "base": 1,
+                "stops": [
+                    [
+                        8,
+                        14
+                    ],
+                    [
+                        14,
+                        15
+                    ]
+                ]
+            },
+            "text-font": [
+                "Knockout 29 Junior Liteweight"
+            ],
+            "visibility": "visible",
+            "icon-size": {
+                "base": 0.8,
+                "stops": [
+                    [
+                        8,
+                        0.1
+                    ],
+                    [
+                        15,
+                        1.1
+                    ]
+                ]
+            },
+            "text-offset": [
+                0,
+                -0.2
+            ],
+            "icon-image": "triangle-outline",
+            "icon-allow-overlap": true
+        },
+        "paint": {
+            "text-color": "hsl(39, 20%, 100%)",
+            "icon-opacity": 1
+        }
+      })
+
 
       this.map.addLayer({
         "id": "wineries",
@@ -359,76 +489,46 @@ export default {
         }
       })
 
-      this.map.addLayer({
-        "id": "triangles",
-        "type": "symbol",
-        "source": "winery-label",
-        "filter": [
-            "==",
-            "$type",
-            "Point"
-        ],
-        "layout": {
-            "text-size": {
-                "base": 1,
-                "stops": [
-                    [
-                        8,
-                        14
-                    ],
-                    [
-                        14,
-                        15
-                    ]
-                ]
-            },
-            "text-font": [
-                "Knockout 29 Junior Liteweight"
-            ],
-            "visibility": "visible",
-            "icon-size": {
-                "base": 0.8,
-                "stops": [
-                    [
-                        8,
-                        0.1
-                    ],
-                    [
-                        15,
-                        1.1
-                    ]
-                ]
-            },
-            "text-offset": [
-                0,
-                -0.2
-            ],
-            "icon-image": "triangle",
-            "icon-allow-overlap": true
-        },
-        "paint": {
-            "text-color": "hsl(0, 0%, 100%)",
-            "icon-opacity": 0.7
-        }
-      })
+
+
+      console.log('data loaded')
+      this.zoomCircle(this.map)
+      this.moveCircle(this.map)
+      var elem = this.$refs.map.$el; // Element to fire on
+      
+
+      // var evt = new MouseEvent("click", {
+      //   bubbles: true,
+      //   cancelable: true,
+      //   view: window
+      // });
+      // console.log(elem)
+      // elem.querySelector("canvas").addEventListener('click', function(){
+      //   console.log('clicekd!')
+      // })
+
+      // elem.dispatchEvent(evt);
+      // elem.querySelector("canvas").click({X:0, clientY:0}); // Fire event
     },
 
 
     zoomCircle: function(e){
-      if (e.getZoom() < 9){
+      if (this.map.getZoom() < 9){
         this.circle.r = 0  
       } else{
-        this.circle.r = map_range(e.getZoom(), 15, 9, 50, 15 )  
+        this.circle.r = map_range(this.map.getZoom(), 15, 9, 50, 15 )  
       }
     },
     mapZooming(e){
       this.zoomCircle(e)
-      
     },
 
     moveCircle: function(e){
+
+      // var e = e ? e : this.map
       if(e.isSourceLoaded('winery-label')){
-        var features = e.queryRenderedFeatures({ layers: ['triangles']})
+        // console.log('source is loaded')
+        var features = e.queryRenderedFeatures({ layers: ['triangles', 'triangles-appointment']})
         // console.log(features.length)
         if(features.length > 0){
           this.circle.off = false
@@ -457,6 +557,7 @@ export default {
         this.circle.x = nx
         this.circle.y = ny
         if(this.moveCircleActive){
+          console.log('moving circle')
           this.circle.o = 1;  
         }
 
@@ -478,10 +579,8 @@ export default {
   }
 }
 
-
 </script>
-
-<style>
+<style lang="stylus">
 
 body, html{
   margin: 0;
@@ -517,6 +616,18 @@ body, html{
   /*width: 80%;*/
   background-color: #c6cad2;
 }
+
+.mapboxgl-control-container{
+  position: relative;
+  left: -40px !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+}
+
+.mapboxgl-control-container button{
+  margin-bottom: 0 !important;
+}
+
 
 
 .circle{
@@ -596,7 +707,7 @@ body, html{
 .information{
   position: relative;
   z-index: 1;
-  /*height: 100vh;*/
+  height: 100vh;
   display: flex;
   flex-direction: column;
   flex-wrap: wrap;
@@ -700,10 +811,8 @@ font-weight: 400;
 
 .info-container{
   display: block;
-  /*width:100%;*/
   position: relative;
-  /*float: left;*/
-  /*clear: both;*/
+
 }
 
 
@@ -767,7 +876,7 @@ font-weight: 400;
   font-size: 1.6em;
   line-height: 18px;
   top: 7px;
-  padding-left: 15px;
+  padding-left: 30px;
   /*color: rgba(0,0,0,0.56);*/
   /*text-overflow: visible;*/
 }
