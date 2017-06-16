@@ -7,10 +7,10 @@ By Urban & Public
 This repository contains the source code for the interactive map displayed on [Adelaide Hills Wine](http://adelaidehillswine.com.au/region) website.
 
 **Staging site:**
-[http:ahwr-map-ie.surge.sh](AHWR on surge)
+[http://ahwr-map-ie.surge.sh](AHWR on surge)
 
 **Production site:** 
-[http:ahwr-map.surge.sh](embeddable as iframe. (same as staging))
+[http://ahwr-map.surge.sh](embeddable as iframe. (same as staging))
 
 **Firebase Console**
 [https://console.firebase.google.com/u/0/project/ahwr-e58a9/database](https://console.firebase.google.com/u/0/project/ahwr-e58a9/database)
