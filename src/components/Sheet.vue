@@ -55,7 +55,7 @@ export default {
           type: dynamics.spring,
           duration: map_range(Math.abs(callback.velocityX), 0, 6, 1000, 100),
           frequency: 274,
-          friction: 516,
+          friction: 516,  
           complete: function(){
         // self.$emit('resized')
         // console.log(callback)
@@ -177,14 +177,4 @@ export default {
   // background-color: rgba(0,0,0,0.2);
 }
 
-
-#map{
-  position: relative;
-  width: 100%;
-  height: 100vh;
-  left:0;
-  top:0px;
-  // float:left; 
-  background-color: transparent;
-}
 </style>
