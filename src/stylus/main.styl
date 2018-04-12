@@ -1,0 +1,41 @@
+// main.styl
+@import '../../node_modules/vuetify/src/stylus/settings/_colors'
+// @import '../../node_modules/vuetify/src/stylus/settings/_variables'
+
+$theme := {
+  primary: $blue.darken-2
+  accent: $blue.accent-2
+  secondary: $grey.darken-3
+  info: $blue.base
+  warning: $amber.base
+  error: $red.base
+  success: $green.base
+}
+
+
+
+
+
+.noevents{
+	pointer-events: none !important;
+}
+
+.noselect{
+	user-select: none;
+}
+
+.events{
+  pointer-events: auto; 
+}
+.allevents{
+	pointer-events: all;	
+}
+
+.fade-enter-active, .fade-leave-active {
+  transition: opacity 145ms cubic-bezier(0.0, 0.0, 0.2, 1);
+}
+.fade-enter, .fade-leave-active {
+  opacity: 0
+}
+
+@import '../../node_modules/vuetify/src/stylus/main'
