@@ -39,7 +39,7 @@ export default {
   computed:{
     ...Vuex.mapGetters(['miniWidth', 'menuWidth']),
   },
-  mounted(){
+  created(){
     this.setMenuWidth(this.getMenuWidth())
     console.log('set menuwidth:', this.menuWidth)
   },

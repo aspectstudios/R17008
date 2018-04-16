@@ -32,6 +32,7 @@ import Vue from 'vue'
 import Mapbox from 'mapbox-gl-vue';
 import store from '../store.js' 
 import Vuex from 'vuex'
+import _ from 'lodash'
 var grid = require('../assets/grid.json')
 
 export default {
@@ -46,57 +47,93 @@ export default {
       areFeaturesLoaded: false,
       hide: true,
       interval: null,
+      filters: {
+        grid: null,
+        region: null
+      }
     }},
   mounted(){
-    this.setZoomCenter()
+    // console.log('got width?', this.menuWidth)
   },
   watch: {
-    features: function(val){
-      if(val && !this.areFeaturesLoaded){
-        // this.addMarkers(val)
-      }
+    _mapCenter: function(m){   
+      this.updateMapMini()
+      this.filterRegion()
+      // console.log(this.currentGridRef)
+      this._mapmini.setFilter(...this.filters.grid)
+      this._mapmini.setFilter(...this.filters.region)
     },
-    _mapCenter: function(m){        
 
-        this.setZoomCenter()
-        var px = [((this.$vuetify.breakpoint.width-this.menuWidth)/2), (this.$vuetify.breakpoint.height/2)]
-        var p = this._map.unproject(px)
-        var pm = this._mapmini.project(p)
-        this.setOffsetCenter(pm)
-        this.setCurrentGridRef(this._mapmini.queryRenderedFeatures(pm))
-        this.setCurrentGridRef(this.currentGridRef ? this.currentGridRef[0] : [])
-        if(this.currentGridRef){
-          var ag = this.currentGridRef.properties.index
-          this._mapmini.setFilter()
-          this._mapmini.setFilter('gridlayer', ['==', 'index', ag]);  
-        }    
-    }
   },
   computed:{
-    ...Vuex.mapGetters(['_mapmini', '_mapCenter', '_map', 'miniWidth', 'mini', 'currentGridRef', '_mapWidth', 'menuWidth', 'offsetCenter']),
+    ...Vuex.mapGetters(['_mapmini', '_mapCenter', '_map', 'miniWidth', 'mini', 'currentGridRef', '_mapWidth', 'menuWidth', 'offsetCenterLngLat', 'offsetCenterPx']),
 
-    
+    offsetCenterPx: function(val){
+      var ocp = this._map.unproject([((this.$vuetify.breakpoint.width-this.menuWidth)/2), (this.$vuetify.breakpoint.height/2)])
+      this.setOffsetCenterLngLat(ocp)
+      return ocp
+    },
 
   },
   methods: {
-    ...Vuex.mapMutations(['setMapMini', 'setCurrentGridRef', 'setDebug', 'setOffsetCenter']),
+    ...Vuex.mapMutations(['setMapMini', 'setCurrentGridRef', 'setDebug', 'setOffsetCenterLngLat', 'setOffsetCenterPx']),
     
     remap(num, in_min, in_max, out_min, out_max) {
       return (num - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
     },
 
+    changeLayer(){
+      // if(this._map.getLayer('3d-buildings')){
+      //   this._map.removeLayer('3d-buildings')  
+      // }
+
+      // this._map.addLayer({
+      //       'id': '3d-buildings',
+      //       'source': 'grid',
+      //       'type': 'fill-extrusion',
+      //       'minzoom': 2,
+      //       'paint': {
+      //           'fill-extrusion-color': '#fff',
+      //           'fill-extrusion-height': 500,
+
+      //           'fill-extrusion-base': 0,
+      //           'fill-extrusion-opacity': 1
+      //       },
+      //       "filter": ["all", ["==", ["get", "id"], this.currentGridRef.properties.index]],
+      //   }, 'gridlayer');
+    },
+
+    filterRegion(){
+      var r = this._mapmini.queryRenderedFeatures(this._mapmini.project(this.offsetCenterPx), { layers: ['ahwr-regions-mouseover'] })
+      if(r.length){
+        this.filters.region = ['ahwr-regions-line', ['==', 'id', r[0].properties.id]]
+        
+        // this._mapmini.setFilter(...this.filters.region);
+        // console.log(this._mapmini.getLayer('ahwr-regions-line'))
+        // this._mapmini.setFilter(['ahwr-regions-line', ['match', ['get', 'id'], r[0].properties.id, true, false]])
+      }
+    },
+
+    updateMapMini(){
+      this.setZoomCenter()
+      var pm = this._mapmini.project(this.offsetCenterPx)
+      this.setOffsetCenterPx(pm)
+      var gr = this._mapmini.queryRenderedFeatures(pm, {'layers': ['grid']})
+      if(gr.length){
+        this.setCurrentGridRef(gr[0])
+        this.filters.grid = ['gridlayer', ['==', 'index', gr[0].properties.index]]
+      }
+      
+    },
+
     setZoomCenter(){
       // set zoom as ratio from large map
         this._mapmini.setZoom(this.remap(this._map.getZoom(), 8, 12.7, this.remap(this.$vuetify.breakpoint.width,300,1920,8,8.5), this.remap(this.$vuetify.breakpoint.width,300,1920,8.5,9)))
-      // set center of 
-        this._mapmini.setCenter(this.miniOffset())
-    },
-
-    miniOffset: function(){
-      var px = [((this.$vuetify.breakpoint.width-this.menuWidth-this.miniWidth)/2), (this.$vuetify.breakpoint.height/2)]
-      var p = this._map.unproject(px)
-      // console.log(px, p)
-      return[p.lng, p.lat + this.remap(this.$vuetify.breakpoint.height, 200, 1080, 0, 0.5)]
+      
+      // lower map to be at bottom of window, depending on window height.
+      var v_offset = [this.offsetCenterPx.lng, this.offsetCenterPx.lat + this.remap(this.$vuetify.breakpoint.height, 200, 1080, 0, 0.5)]
+      // set center of mapmini
+        this._mapmini.setCenter(v_offset)
     },
 
     mapInit(map){
@@ -115,6 +152,7 @@ export default {
       this.interval = setInterval( function(e){
           if(this._mapmini.areTilesLoaded()){
             self.hide = false
+            self.updateMapMini()
             clearInterval(this.interval) 
           }
       }.bind(this), 100)
@@ -137,8 +175,16 @@ export default {
           "source": "grid",
           "paint": {
             // 'fill-antialias': true,
-            'fill-opacity': 0.7,
+            'fill-opacity': {
+                "base": 1,
+                "stops": [
+                  [0, 0],
+                  [8.65, 0],
+                  [8.75, 1]
+                ]
+              },
             'fill-color': '#fff',
+            'fill-outline-color': '#fa5f5f'
             
             // 'fill-translate': [0, 0],
             // 'fill-translate-anchor': 'map',
@@ -147,13 +193,21 @@ export default {
           "filter": ["==", "$type", "Polygon"],
       });
 
-      this._mapmini.setFilter('gridlayer', ['==', 'index', 99999]);  
+      // this._mapmini.setFilter('gridlayer', ['==', 'index', 99999]);  
 
       
+
       // this._mapmini.transform._fov = 0.4
     },
-    mapClick(){
-
+    mapClick(map, e){
+       var grid = _.pickBy(map.queryRenderedFeatures(e.lngLat), e=>{
+        return e.layer.id == "gridlayer"
+       })
+       // var p = this._mapmini.queryRenderedFeatures(e.lngLat)
+       // console.log('query',this._mapmini.queryRenderedFeatures(e.lngLat))
+       // console.log('grid', grid)
+       this._map.flyTo({center: [e.lngLat.lng, e.lngLat.lat] });
+       // this._map.flyTo({center: this._mapmini.unproject([e.point.x-61, e.point.y]) });
     },
     mapZoom(){
 

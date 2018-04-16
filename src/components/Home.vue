@@ -10,8 +10,10 @@
           </v-flex>
         </v-layout>
       </v-container> -->
-      <mappy container="map" zoom="9" :LngLat="[138.829631 ,-34.964802]" mapStyle="mapbox://styles/edanweis/cjfacythk27812rqksxeixj87" :token="credentials.mapbox.token"></mappy> 
-<!--       <div v-if="_mapCenter" class="mapCenter" :style="{'top': projectedCenter.y+'px', 'left': projectedCenter.x+'px'}"></div> -->
+      <mappy container="map" zoom="9" :LngLat="[138.829631 ,-34.964802]" mapStyle="mapbox://styles/edanweis/cjg1oa00136s62socaf324ra0" :token="credentials.mapbox.token"></mappy> 
+
+      <!-- <div v-if="_mapCenter" class="mapCenter" :style="{'top': projectedCenter.y+'px', 'left': projectedCenter.x+'px'}"></div> -->
+      <!-- <div v-if="_mapCenter" class="mapCenter" :style="{'top': projectedCenter.y+'px', 'left': projectedCenter.x+'px'}"></div> -->
       <!-- <div class="debug"><pre>{{debug}}</pre></div> -->
       </div>
 </template>
@@ -34,8 +36,7 @@ export default {
     ...Vuex.mapGetters(['mini', '_mapCenter', '_map', 'debug']),
 
     projectedCenter: function(){
-       var pc = this._map.project(this._mapCenter) 
-      return pc
+       return this._map.project(this._mapCenter)
     }
   }
 }

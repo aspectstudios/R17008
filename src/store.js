@@ -15,7 +15,8 @@ const mappy = {
     menuWidth: null,
     currentGridRef: null,
     features: [],
-    offsetCenter: null,
+    offsetCenterLngLat: null,
+    offsetCenterPx: null,
     debug: null
   },
   mutations: {
@@ -47,8 +48,11 @@ const mappy = {
     setDebug: function(state, debug){
       state.debug = debug
     },
-    setOffsetCenter: function(state, coords){
-      state.offsetCenter = coords
+    setOffsetCenterLngLat: function(state, coords){
+      state.offsetCenterLngLat = coords
+    },
+    setOffsetCenterPx: function(state, px){
+      state.offsetCenterPx = px
     },
   },
   getters: {
@@ -61,7 +65,8 @@ const mappy = {
     _mapWidth: state => state._mapWidth,
     miniWidth: state => state.miniWidth,
     menuWidth: state => state.menuWidth,
-    offsetCenter: state => state.offsetCenter,
+    offsetCenterLngLat: state => state.offsetCenterLngLat,
+    offsetCenterPx: state => state.offsetCenterPx,
     debug: state => state.debug,
 
   },

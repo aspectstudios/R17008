@@ -49,6 +49,11 @@ export default {
       interval: null,
       hide: true,
       grid,
+      updateFilter: true,
+      filters: {
+        grid: [],
+        region: []
+      }
     
     }},
   mounted(){
@@ -61,7 +66,7 @@ export default {
     }
   },
   computed: {
-    ...Vuex.mapGetters(['currentGridRef', 'mini', 'miniWidth'])
+    ...Vuex.mapGetters(['currentGridRef', 'mini', 'miniWidth', 'offsetCenterPx', 'offsetCenterLngLat', '_map'])
   },
   methods: {
 
@@ -129,7 +134,9 @@ export default {
           "type": "fill",
           "source": "grid",
           "paint": {
-            'fill-opacity': 0.2,
+            'fill-opacity':{
+              "base": 1,
+              "stops": [[8, 0],[11, 0],[12,.2]]},
             'fill-color': '#E11212',
             // 'fill-antialias': true,
             // 'fill-translate': [0, 0],
@@ -139,24 +146,51 @@ export default {
           "filter": ["==", "$type", "Polygon"],
       });
 
-      // map.setFilter('gridlayer', ['==', 'index', this.currentGridRef]);  
+      map.addLayer({
+            'id': '3d-buildings',
+            'source': 'grid',
+            // 'source-layer': 'building',
+            // 'filter': ['==', 'extrude', 'true'],
+            // 'filter': ['==', 'extrude', 'true'],
+            'type': 'fill-extrusion',
+            'minzoom': 2,
+            'paint': {
+                'fill-extrusion-color': '#fff',
+                'fill-extrusion-height-transition': {duration: 100},
+                'fill-extrusion-height': 0,
+                'fill-extrusion-base': 0,
+                'fill-extrusion-opacity': 1
+            },
+            "filter": ["all", ["==", ["get", "index"], 9999]],
+        }, 'ahwr-regions');
+
+      // console.log('layer id?: ', map.getStyle().layers[map.getStyle().layers.length-1].id)
+
+      map.setFilter('gridlayer', ['==', 'index', 99999]);  
+      map.setFilter('ahwr-regions-solid', ['==', 'id', 99999]);  
+
+
 
       // this._map.transform._fov = 0.4
     },
-    mapClick(){
-
+    mapClick(map, e){
+      map.flyTo({center: e.lngLat });
+      // console.log(map.getCenter(), map.project(map.getCenter()))
     },
-    // mapZoom: _.debounce(function(map){
+    mapZoom: _.debounce(function(map){
+
     //   var z =map.getZoom()
     //   map.flyTo({
-    //f     pitch: this.remap(z,6,20,0,80)
+    // f     pitch: this.remap(z,6,20,0,80)
     //   })     
 
-    // }, 200),
+    
 
-    mapZoom(map){
+    }, 200),
+
+    // mapZoom(map){
       
-    },
+    // },
     zoomStart(map){
       if(this.touching){
         var z = map.getZoom()
@@ -169,20 +203,9 @@ export default {
     },
 
     mapMove(map){
-      this.setMapCenter(map.getCenter())
-      if(this.currentGridRef){
-        var ag = this.currentGridRef.properties.index
-        map.setFilter()
-        map.setFilter('gridlayer', ['==', 'index', ag]);  
-      }
-
-      if (this.mini){
-        return this.$vuetify.breakpoint.width - this.miniWidth  
-      } else{
-        return this.$vuetify.breakpoint.width - this.remap(this.$vuetify.breakpoint.width,300,1920,200,500)  
-      }
-
-
+      this.setMapCenter(this._map.getCenter())
+      this.filterRegion()
+      this.filterGrid()      
     },
     mapMoveend(){
 
@@ -202,6 +225,24 @@ export default {
     mapDblclick(){
 
     },
+    filterRegion(){
+      var r = this._map.queryRenderedFeatures(this._map.project(this.offsetCenterLngLat), { layers: ['ahwr-regions-mouseover'] })
+      if(r.length){
+        this.filters.region = ['ahwr-regions-solid', ['match', ['get', 'id'], r[0].properties.id, true, false]]
+        this._map.setFilter(...this.filters.region)
+      }
+    },
+    filterGrid(){
+      this.filters = {'grid': [], 'region': []}
+      if(this.currentGridRef){
+        var ag = this.currentGridRef.properties.index
+        // console.log(ag)
+        this.filters.grid = ['gridlayer', ['match', ['get', 'index'], ag, true, false]] 
+        this._map.setFilter(...this.filters.grid)
+        
+      }
+
+    }
   }
 }
 </script>
