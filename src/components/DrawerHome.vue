@@ -8,9 +8,9 @@
     <div :class="['overlay-grad', 'noevents']" :style="{'width': 'calc(100% - ' + miniWidth +'px)' }"></div>
     <div class="overlay-mapmini noevents"></div>
 
+    <terrain-profile></terrain-profile>
     <div class="menu noevents">  
       <div class="item">
-        
       </div>
       <div class="item">
            <!-- <div class="gridRefInputWrapper"> -->
@@ -54,13 +54,15 @@
 import credentials from '../credentials';
 import Mappy from './Mappy';
 import MappyMini from './MappyMini';
+import TerrainProfile from './TerrainProfile';
 import Vuex from 'vuex'
 
 export default {
   name: 'home',
   components: {
     Mappy,
-    MappyMini
+    MappyMini,
+    TerrainProfile
   },
   data () {
     return {

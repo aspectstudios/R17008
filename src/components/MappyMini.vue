@@ -59,9 +59,11 @@ export default {
     _mapCenter: function(m){   
       this.updateMapMini()
       this.filterRegion()
+      this.fadeGrid()
       // console.log(this.currentGridRef)
-      this._mapmini.setFilter(...this.filters.grid)
-      this._mapmini.setFilter(...this.filters.region)
+      this.filters.grid ? this._mapmini.setFilter(...this.filters.grid) : null
+      this.filters.region ? this._mapmini.setFilter(...this.filters.region) : null
+      
     },
 
   },
@@ -103,10 +105,18 @@ export default {
       //   }, 'gridlayer');
     },
 
+    fadeGrid(){
+
+      this._mapmini.setPaintProperty('gridlayer', 'fill-opacity', this.remap(this._map.getZoom(), 10.5, 12, 0, 0.9))
+
+    },
+
     filterRegion(){
       var r = this._mapmini.queryRenderedFeatures(this._mapmini.project(this.offsetCenterPx), { layers: ['ahwr-regions-mouseover'] })
       if(r.length){
-        this.filters.region = ['ahwr-regions-line', ['==', 'id', r[0].properties.id]]
+        this.filters.region = ['ahwr-regions-line', ['match', ['to-number', ['get', 'id']], r[0].properties.id, true, false]] //
+
+        // this.filters.region = ['ahwr-regions-line', ['==', 'id', r[0].properties.id]]
         
         // this._mapmini.setFilter(...this.filters.region);
         // console.log(this._mapmini.getLayer('ahwr-regions-line'))
@@ -128,10 +138,14 @@ export default {
 
     setZoomCenter(){
       // set zoom as ratio from large map
-        this._mapmini.setZoom(this.remap(this._map.getZoom(), 8, 12.7, this.remap(this.$vuetify.breakpoint.width,300,1920,8,8.5), this.remap(this.$vuetify.breakpoint.width,300,1920,8.5,9)))
+      let z = this.remap(this._map.getZoom(), 8, 12.7, this.remap(this.$vuetify.breakpoint.width,300,1920,8,8.5), this.remap(this.$vuetify.breakpoint.width,300,1920,8.5,9))
+
+        this._mapmini.setZoom(z)
+
+        // this._mapmini.setPaintProperty('grid', 'fill-opacity', this.remap(z, this.remap(this.$vuetify.breakpoint.width,300,1920,8,8.5), this.remap(this.$vuetify.breakpoint.width,300,1920,8.5,9), 0.9, 0 ))        
       
       // lower map to be at bottom of window, depending on window height.
-      var v_offset = [this.offsetCenterPx.lng, this.offsetCenterPx.lat + this.remap(this.$vuetify.breakpoint.height, 200, 1080, 0, 0.5)]
+      var v_offset = [this.offsetCenterPx.lng, this.offsetCenterPx.lat + this.remap(this.$vuetify.breakpoint.height, 200, 1080, 0, 0.35)]
       // set center of mapmini
         this._mapmini.setCenter(v_offset)
     },

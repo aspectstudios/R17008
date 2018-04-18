@@ -49,10 +49,23 @@ export default {
       interval: null,
       hide: true,
       grid,
+      changedGrid: false,
       updateFilter: true,
       filters: {
         grid: [],
         region: []
+      },
+      sketchfabModeActive: false,
+      gridProperties: {
+        sketchfabBg: null,
+        flatHeight: 0,
+        flatOpacity: {"base": 1,"stops": [[11, 0], [12.7, 0.3]]},
+        flatColor: '#513657',
+        flatPitch: null,
+        highHeight: 300,
+        highOpacity: 1,
+        highColor: '#513657',
+        highPitch: 60
       }
     
     }},
@@ -63,14 +76,27 @@ export default {
       if(val && !this.areFeaturesLoaded){
         // this.addMarkers(val)
       }
-    }
+    },
+
+    currentGridRef: function(newVal, oldVal){
+      if(newVal != oldVal){
+        this.changedGrid = true
+        // setTimeout(function () {
+        //   if(this.sketchfabModeActive){
+        //     // this.flattenGrid()  
+        //   }
+        // }.bind(this), 120)        
+      }
+    },
+
+
   },
   computed: {
-    ...Vuex.mapGetters(['currentGridRef', 'mini', 'miniWidth', 'offsetCenterPx', 'offsetCenterLngLat', '_map'])
+    ...Vuex.mapGetters(['currentGridRef', 'mini', 'miniWidth', 'offsetCenterPx', 'offsetCenterLngLat', '_map', 'menuWidth', 'bearing'])
   },
   methods: {
 
-    ...Vuex.mapMutations(['setMapCenter', 'setMap', 'setMapWidth']),
+    ...Vuex.mapMutations(['setMapCenter', 'setMap', 'setMapWidth', 'setDebug', 'setBearing']),
 
     remap(num, in_min, in_max, out_min, out_max) {
       return (num - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
@@ -112,6 +138,7 @@ export default {
     },
     mapLoad(map){
       this.$emit('loaded', map)
+      this.setBearing(map.getBearing())
       var self = this
       this.interval = setInterval( function(e){
           if(map.areTilesLoaded()){
@@ -120,7 +147,7 @@ export default {
           }
       }.bind(this), 100)
 
-
+      this.gridProperties.sketchfabBg = this._map.getPaintProperty('sketchfab-bg', 'background-opacity')
       map.addSource('grid', {
         type: 'geojson', 
         data: {
@@ -134,14 +161,13 @@ export default {
           "type": "fill",
           "source": "grid",
           "paint": {
-            'fill-opacity':{
-              "base": 1,
-              "stops": [[8, 0],[11, 0],[12,.2]]},
+            'fill-opacity':this.gridProperties.flatOpacity,
             'fill-color': '#E11212',
+            // 'fill-outline-color': '#fff',
             // 'fill-antialias': true,
             // 'fill-translate': [0, 0],
             // 'fill-translate-anchor': 'map',
-            'fill-opacity-transition': {duration: 400}
+            // 'fill-opacity-transition': {duration: 400}
           },
           "filter": ["==", "$type", "Polygon"],
       });
@@ -155,8 +181,8 @@ export default {
             'type': 'fill-extrusion',
             'minzoom': 2,
             'paint': {
-                'fill-extrusion-color': '#fff',
-                'fill-extrusion-height-transition': {duration: 100},
+                'fill-extrusion-color': '#513657',
+                'fill-extrusion-height-transition': {duration: 600},
                 'fill-extrusion-height': 0,
                 'fill-extrusion-base': 0,
                 'fill-extrusion-opacity': 1
@@ -174,9 +200,60 @@ export default {
       // this._map.transform._fov = 0.4
     },
     mapClick(map, e){
-      map.flyTo({center: e.lngLat });
+      console.log(e)
+      var g = map.queryRenderedFeatures(e.point, { layers: ['gridlayer']})
+      if(g.length && !this.sketchfabModeActive){
+        console.log('extruding grid...')
+        this.changedGrid = false
+        this.extrudeGrid(g)
+      } else {
+        if(!g.length || this.sketchfabModeActive){
+          console.log('flattening grid...')
+          this.flattenGrid()
+          map.flyTo({center: e.lngLat});
+        }
+      }
+
       // console.log(map.getCenter(), map.project(map.getCenter()))
     },
+    extrudeGrid(g){
+      var g = g.length ? g : [this.currentGridRef]
+      this._map.setPaintProperty('gridlayer', 'fill-opacity', 0)
+      // this.toggleLayers(['labels'], 'none')
+      this._map.setFilter('3d-buildings', ['match', ['to-number', ['get', 'index']], g[0].properties.index, true, false])
+      this._map.setPaintProperty('3d-buildings', 'fill-extrusion-height', this.gridProperties.highHeight)
+      this._map.setPaintProperty('3d-buildings', 'fill-extrusion-opacity', this.gridProperties.highOpacity)
+      setTimeout(function () {
+        this.sketchfabModeActive = true
+        this._map.setPaintProperty('sketchfab-bg', 'background-opacity', 0.999)
+        this._map.easeTo({pitch: this.gridProperties.highPitch, bearing: this.bearing })
+      }.bind(this), 120)
+
+      
+    },
+    flattenGrid(){
+      this.sketchfabModeActive = false
+      this._map.setPaintProperty('sketchfab-bg', 'background-opacity', 0)
+      // this.toggleLayers(['labels'], 'visible')
+      this._map.setPaintProperty('3d-buildings', 'fill-extrusion-height', this.gridProperties.flatHeight)
+      this._map.setPaintProperty('3d-buildings', 'fill-extrusion-opacity', 0)
+      this._map.easeTo({pitch: this.gridProperties.flatPitch, bearing: this.bearing })
+
+      setTimeout(function () {
+          this._map.setPaintProperty('gridlayer', 'fill-opacity', this.gridProperties.flatOpacity )
+      }.bind(this), 30)
+            
+    },
+
+
+    toggleLayers(layers, state){
+      // console.log('setting layers to ', String(state), )
+      for(let l of layers){
+        this._map.setLayoutProperty(l, 'visibility', state)
+      }
+    },
+
+
     mapZoom: _.debounce(function(map){
 
     //   var z =map.getZoom()
@@ -184,6 +261,10 @@ export default {
     // f     pitch: this.remap(z,6,20,0,80)
     //   })     
 
+    if(!this.sketchfabModeActive){
+      this.gridProperties.flatPitch = this._map.getPitch()
+    }
+    
     
 
     }, 200),
@@ -206,12 +287,15 @@ export default {
       this.setMapCenter(this._map.getCenter())
       this.filterRegion()
       this.filterGrid()      
+      this.setDebug({currentGridRef: this.currentGridRef.properties.id, sketchfabModeActive: this.sketchfabModeActive, changedGrid: this.changedGrid} )   
     },
     mapMoveend(){
-
+      console.log('moveStart')
+      if(this.changedGrid && this.sketchfabModeActive){
+        this.flattenGrid()
+      }
     },
     mapMovestart(){
-
     },
     mapStyleloading(){
 
@@ -228,7 +312,9 @@ export default {
     filterRegion(){
       var r = this._map.queryRenderedFeatures(this._map.project(this.offsetCenterLngLat), { layers: ['ahwr-regions-mouseover'] })
       if(r.length){
-        this.filters.region = ['ahwr-regions-solid', ['match', ['get', 'id'], r[0].properties.id, true, false]]
+        //using data expressions as filter produces a rendering glitch with polygons
+        // this.filters.region = ['ahwr-regions-solid', ['match', ["to-number", ['get', 'id']], r[0].properties.id, true, false]]
+        this.filters.region = ['ahwr-regions-solid', ['==', 'id', r[0].properties.id]]
         this._map.setFilter(...this.filters.region)
       }
     },

@@ -41,13 +41,13 @@ export default {
   },
   created(){
     this.setMenuWidth(this.getMenuWidth())
-    console.log('set menuwidth:', this.menuWidth)
+    // console.log('set menuwidth:', this.menuWidth)
   },
   watch: {
     mini: function(val){
       this.setMini(val)
       this.setMenuWidth(this.getMenuWidth())
-      console.log('set menuwidth:', this.menuWidth)
+      // console.log('set menuwidth:', this.menuWidth)
     }
   },
   methods: {

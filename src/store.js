@@ -10,6 +10,7 @@ const mappy = {
     _mapCenter: null,
     _mapWidth: null,
     _mapmini: null,
+    bearing: null,
     mini: false,
     miniWidth: 61,
     menuWidth: null,
@@ -29,6 +30,9 @@ const mappy = {
     },
     setMap: function(state, map){
       state._map = map
+    },
+    setBearing: function(state, bearing){
+      state.bearing = bearing
     },
     setMapMini: function(state, map){
       state._mapmini = map
@@ -67,6 +71,7 @@ const mappy = {
     menuWidth: state => state.menuWidth,
     offsetCenterLngLat: state => state.offsetCenterLngLat,
     offsetCenterPx: state => state.offsetCenterPx,
+    bearing: state => state.bearing,
     debug: state => state.debug,
 
   },

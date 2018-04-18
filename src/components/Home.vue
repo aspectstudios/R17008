@@ -10,7 +10,9 @@
           </v-flex>
         </v-layout>
       </v-container> -->
-      <mappy container="map" zoom="9" :LngLat="[138.829631 ,-34.964802]" mapStyle="mapbox://styles/edanweis/cjg1oa00136s62socaf324ra0" :token="credentials.mapbox.token"></mappy> 
+      <mappy container="map" zoom="9" :LngLat="[138.829631 ,-34.964802]" mapStyle="mapbox://styles/edanweis/cjg354nvaisvf2srv8vcv3yin" :token="credentials.mapbox.token"></mappy> 
+      <!-- <div class="debug"><pre>{{debug}}</pre></div> -->
+      <!-- <northstar></northstar> -->
 
       <!-- <div v-if="_mapCenter" class="mapCenter" :style="{'top': projectedCenter.y+'px', 'left': projectedCenter.x+'px'}"></div> -->
       <!-- <div v-if="_mapCenter" class="mapCenter" :style="{'top': projectedCenter.y+'px', 'left': projectedCenter.x+'px'}"></div> -->
