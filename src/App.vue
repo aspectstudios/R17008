@@ -55,7 +55,7 @@ export default {
 
     getMenuWidth: function(){
       if(this.mini){
-        return this.remap(this.miniWidth,300,1920,200,500)  
+        return this.miniWidth
       } else{
         return this.remap(this.$vuetify.breakpoint.width,300,1920,200,500)  
       }

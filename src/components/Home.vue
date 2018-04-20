@@ -10,7 +10,9 @@
           </v-flex>
         </v-layout>
       </v-container> -->
-      <mappy container="map" zoom="9" :LngLat="[138.829631 ,-34.964802]" mapStyle="mapbox://styles/edanweis/cjg354nvaisvf2srv8vcv3yin" :token="credentials.mapbox.token"></mappy> 
+      <mappy container="map" zoom="9" :LngLat="[138.829631 ,-34.964802]" mapStyle="mapbox://styles/edanweis/cjg354nvaisvf2srv8vcv3yin" :token="credentials.mapbox.token"></mappy>
+
+      <sketchfab style="" urlid="6d24cec1439841ae8b8231ae973995ae" autospin='0' autostart='1' preload='1' ui_controls='0' ui_infos='0' ui_related='0' transparent='1'></sketchfab>
       <!-- <div class="debug"><pre>{{debug}}</pre></div> -->
       <!-- <northstar></northstar> -->
 
@@ -24,10 +26,13 @@
 import credentials from '../credentials';
 import Mappy from './Mappy';
 import Vuex from 'vuex'
+import Sketchfab from './Sketchfab'
+
 export default {
   name: 'home',
   components: {
-    Mappy
+    Mappy,
+    Sketchfab
   },
   data () {
     return {
@@ -35,7 +40,7 @@ export default {
     }
   },
   computed: {
-    ...Vuex.mapGetters(['mini', '_mapCenter', '_map', 'debug']),
+    ...Vuex.mapGetters(['mini', '_mapCenter', '_map', 'debug', 'sketchfab']),
 
     projectedCenter: function(){
        return this._map.project(this._mapCenter)

@@ -147,7 +147,7 @@ export default {
           }
       }.bind(this), 100)
 
-      this.gridProperties.sketchfabBg = this._map.getPaintProperty('sketchfab-bg', 'background-opacity')
+
       map.addSource('grid', {
         type: 'geojson', 
         data: {
@@ -200,7 +200,7 @@ export default {
       // this._map.transform._fov = 0.4
     },
     mapClick(map, e){
-      console.log(e)
+      this.filterRegion(e)
       var g = map.queryRenderedFeatures(e.point, { layers: ['gridlayer']})
       if(g.length && !this.sketchfabModeActive){
         console.log('extruding grid...')
@@ -210,13 +210,16 @@ export default {
         if(!g.length || this.sketchfabModeActive){
           console.log('flattening grid...')
           this.flattenGrid()
-          map.flyTo({center: e.lngLat});
+          var c = this._map.project(this._map.getCenter())
+          var offset = this._map.getCenter().lng - this._map.unproject([c.x-(this.menuWidth/2), c.y]).lng
+          map.flyTo({center: [e.lngLat.lng+offset,e.lngLat.lat]});
         }
       }
 
       // console.log(map.getCenter(), map.project(map.getCenter()))
     },
     extrudeGrid(g){
+      this.sketchfabModeActive = true
       var g = g.length ? g : [this.currentGridRef]
       this._map.setPaintProperty('gridlayer', 'fill-opacity', 0)
       // this.toggleLayers(['labels'], 'none')
@@ -224,7 +227,6 @@ export default {
       this._map.setPaintProperty('3d-buildings', 'fill-extrusion-height', this.gridProperties.highHeight)
       this._map.setPaintProperty('3d-buildings', 'fill-extrusion-opacity', this.gridProperties.highOpacity)
       setTimeout(function () {
-        this.sketchfabModeActive = true
         this._map.setPaintProperty('sketchfab-bg', 'background-opacity', 0.999)
         this._map.easeTo({pitch: this.gridProperties.highPitch, bearing: this.bearing })
       }.bind(this), 120)
@@ -285,15 +287,15 @@ export default {
 
     mapMove(map){
       this.setMapCenter(this._map.getCenter())
-      this.filterRegion()
+      // this.filterRegion()
       this.filterGrid()      
-      this.setDebug({currentGridRef: this.currentGridRef.properties.id, sketchfabModeActive: this.sketchfabModeActive, changedGrid: this.changedGrid} )   
+      // this.setDebug({currentGridRef: this.currentGridRef.properties.id, sketchfabModeActive: this.sketchfabModeActive, changedGrid: this.changedGrid} )   
     },
     mapMoveend(){
-      console.log('moveStart')
-      if(this.changedGrid && this.sketchfabModeActive){
-        this.flattenGrid()
-      }
+      // console.log('moveStart')
+      // if(this.changedGrid && this.sketchfabModeActive){
+      //   this.flattenGrid()
+      // }
     },
     mapMovestart(){
     },
@@ -309,12 +311,16 @@ export default {
     mapDblclick(){
 
     },
-    filterRegion(){
-      var r = this._map.queryRenderedFeatures(this._map.project(this.offsetCenterLngLat), { layers: ['ahwr-regions-mouseover'] })
-      if(r.length){
+    filterRegion(e){
+      if(e){
+        var e = this._map.queryRenderedFeatures( e.point, { layers: ['ahwr-regions-mouseover'] })
+      } else{
+        var e = this._map.queryRenderedFeatures(this._map.project(this.offsetCenterLngLat), { layers: ['ahwr-regions-mouseover'] })
+      }
+      if(e.length){
         //using data expressions as filter produces a rendering glitch with polygons
         // this.filters.region = ['ahwr-regions-solid', ['match', ["to-number", ['get', 'id']], r[0].properties.id, true, false]]
-        this.filters.region = ['ahwr-regions-solid', ['==', 'id', r[0].properties.id]]
+        this.filters.region = ['ahwr-regions-solid', ['==', 'id', e[0].properties.id]]
         this._map.setFilter(...this.filters.region)
       }
     },

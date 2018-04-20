@@ -8,7 +8,7 @@
     <div :class="['overlay-grad', 'noevents']" :style="{'width': 'calc(100% - ' + miniWidth +'px)' }"></div>
     <div class="overlay-mapmini noevents"></div>
 
-    <terrain-profile></terrain-profile>
+    <terrain-profile v-show="!mini"></terrain-profile>
     <div class="menu noevents">  
       <div class="item">
       </div>

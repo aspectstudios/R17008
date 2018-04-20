@@ -18,7 +18,11 @@ const mappy = {
     features: [],
     offsetCenterLngLat: null,
     offsetCenterPx: null,
-    debug: null
+    debug: null,
+    sketchfab:{
+      cameraOrigin: null,
+      camera: null
+    }
   },
   mutations: {
     
@@ -58,6 +62,9 @@ const mappy = {
     setOffsetCenterPx: function(state, px){
       state.offsetCenterPx = px
     },
+    setSketchfab: function(state, sk){
+      state.sketchfab = sk
+    },
   },
   getters: {
     _map: state => state._map,
@@ -73,6 +80,7 @@ const mappy = {
     offsetCenterPx: state => state.offsetCenterPx,
     bearing: state => state.bearing,
     debug: state => state.debug,
+    sketchfab: state => state.sketchfab,
 
   },
   actions: {
