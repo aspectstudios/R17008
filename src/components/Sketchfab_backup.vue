@@ -1,12 +1,13 @@
 <template>
-<div class="wrapper" :style="{'pointer-events':sketchfabLoaded?'none':'all'} ">
-	<iframe class="api-iframe" ref="api_iframe"
+<div class="wrapper">
+	<iframe class="api-iframe" ref="api_iframe" @mousedown="mouseDown"
 		frameborder="0"
-	    :scrolling="scrolling"
+	    scrolling="no"
 	    marginheight="0"
 	    marginwidth="0"
 	    >
     </iframe>	
+    
     <div class="debug">
       <!-- <p>sketchfab: <pre>{{sketchfab}}</pre></p> -->
       <!-- <p>mapbox: <pre>{{mapbox}}</pre></p> -->
@@ -30,7 +31,6 @@
       <label>y<input type="number" v-model="cam.target.y" step="1"></input></label>
       <label>z<input type="number" v-model="cam.target.z" step="1"></input></label>
     </div>
-
 </div>
 </template>
 
@@ -41,7 +41,7 @@ var sketchfab = require('../sketchfab-viewer-1.1.0.js')
 export default {
 
   name: 'sketchfab',
-  props: ['urlid','autospin','autostart','preload','ui_controls','ui_infos','ui_related', 'scrolling'],
+  props: ['urlid','autospin','autostart','preload','ui_controls','ui_infos','ui_related'],
   components: {},
   data () {
     return {
@@ -87,9 +87,8 @@ export default {
   	       self._api.start()
   	       self._api.addEventListener( 'viewerready', function() {
   	           console.log( 'Viewer is ready' )
-               self.setSketchfabLoaded(true)
-               self.getSketchfabCamera()
-               self.getMapboxOrigin()
+               // self.getSketchfabCamera()
+               // self.getMapboxOrigin()
   	       } )
   	   },
   	   error: function onError() {
@@ -110,7 +109,7 @@ export default {
 
   },
   computed:{
-	...Vuex.mapGetters(['_map', 'sketchfab', '_mapCenter', 'sketchfabLoaded']),
+	...Vuex.mapGetters(['_map', 'sketchfab', '_mapCenter']),
 
   },
   watch:{
@@ -127,7 +126,7 @@ export default {
           val.target.z
           ]]
         // console.log('setting camera')
-        // this._api.setCameraLookAt(lookat[0], lookat[1], 0.01)        
+        this._api.setCameraLookAt(lookat[0], lookat[1], 0.01)        
       },
     deep:true
     },
@@ -137,63 +136,70 @@ export default {
     },
   	_mapCenter: function(val){
       var self = this
-       // this._api.getCameraLookAt( function( err, camera ){
-       //   self.camera = camera
-       // })
-       console.log('_mapCenter', val)
-      this._mapCenterPx = this._map.project(val)
+      var projected = this._map.project(val)
+      this.camera = {position: [projected.x, projected.y], target: Object.values(this.cam.target)}
+      var val = {position: [projected.x, projected.y], target: this.cam.target }
+      console.log(this.camera, val)
 
-       if(!this.mapboxOrigin){
-         this.getMapboxOrigin()
-       }
-       this.getSketchfabCamera()
-       this.getSketchfabCameraNative()
-       
-       // console.log(this.camera.position)
-       if(!self.sketchfabOrigin){
-         self.skOrigin = [this.camera.position.map(e=>{return parseInt(e)}), this.camera.target.map(e=>{return parseInt(e)})]
-       }
-
-       this.setSketchfab({
-         cameraOrigin: this.skOrigin,
-         camera: this.sk
-       })
-       
-       // console.log('have x?', val)
-       this.mapboxCurrentPos = [parseInt(this._mapCenterPx.x)-(window.innerWidth/2), parseInt(this._mapCenterPx.y)-(window.innerHeight/2)]
-
-
-       if(this.sketchfabNativePos){
-         var lookat = [[
-             (self.mapboxCurrentPos[0]*-self.panMultiplier)-this.offsetX,
-             (self.mapboxCurrentPos[1]*self.panMultiplier-2)-this.offsetY,
-             // self.sketchfabNativePos.position[2]
-             self._map.getZoom() * self.zoomMultiplier
-             ],[
-             (self.mapboxCurrentPos[0]*-self.panMultiplier)-this.offsetX,
-             (self.mapboxCurrentPos[1]*self.panMultiplier)-this.offsetY,
-             self.sketchfabNativePos.target[2]
-             ]]
-           // console.log(lookat)
-         if(this.followMapbox){
-           // console.log(self.sketchfabNativePos)
-           console.log("lookat: ",lookat[0], lookat[1])
-           this._api.setCameraLookAt(lookat[0], lookat[1], 0)      
-         }
-       }
       
+      if(!this.mapboxOrigin){
+        this.getMapboxOrigin()
+      }
+      this.getSketchfabCamera()
+      this.getSketchfabCameraNative()
       
+      this._api.getCameraLookAt( function( err, camera ){
+        self.sk = self.camera
+      })
+      console.log(this.camera.position)
+      if(!self.sketchfabOrigin){
+        // console.log(this.camera.position.map(e=>{return e}))
+        self.skOrigin = [this.camera.position.map(e=>{return parseInt(e)}), this.camera.target.map(e=>{return parseInt(e)})]
+      }
+
+      this.setSketchfab({
+        cameraOrigin: this.skOrigin,
+        camera: this.sk
+      })
+      
+      this.mapboxCurrentPos = [parseInt(val.position.x)-(window.innerWidth/2), parseInt(val.position.y)-(window.innerHeight/2)]
+
+      if(this.sketchfabNativePos){
+        var lookat = [[
+            (self.mapboxCurrentPos[0]*-self.panMultiplier)-this.offsetX,
+            (self.mapboxCurrentPos[1]*self.panMultiplier-2)-this.offsetY,
+            // self.sketchfabNativePos.position[2]
+            self._map.getZoom() * self.zoomMultiplier
+            ],[
+            (self.mapboxCurrentPos[0]*-self.panMultiplier)-this.offsetX,
+            (self.mapboxCurrentPos[1]*self.panMultiplier)-this.offsetY,
+            self.sketchfabNativePos.target[2]
+            ]]
+          // console.log(lookat)
+        if(this.followMapbox){
+          // console.log(self.sketchfabNativePos)
+          // console.log(lookat)
+          this._api.setCameraLookAt(lookat[0], lookat[1], 0)      
+        }
+      }
+  	 
+     console.log(this._map.getZoom())
+
      }
     
   },
   methods:{
-	...Vuex.mapMutations(['setSketchfab', 'setSketchfabLoaded']), 
+	...Vuex.mapMutations(['setSketchfab']), 
 	...Vuex.mapActions([]), 
+
+  dragging(e){
+    console.log(e)
+  },
 
   getSketchfabCamera(){
     var self = this
     var cp = this._api.getCameraLookAt( function( err, camera ){
-      // console.log(camera)
+      console.log(camera)
         self.sketchfabCurrentPos = [camera.position.map(e=>{return parseInt(e)}), camera.target.map(e=>{return parseInt(e)})]
 
         if(!self.sketchfabOrigin){
@@ -214,39 +220,35 @@ export default {
 
   getMapboxOrigin(){  
       console.log('have camera?', this.camera)  
-      this.mapboxOrigin = [this._mapCenterPx.x,this._mapCenterPx.y]
-      // this.mapboxOrigin = [parseInt(this.camera.position.x)-(window.innerWidth/2),parseInt(this.camera.position.y)-(window.innerHeight/2)]
+      this.mapboxOrigin = [parseInt(this.camera.position.x)-(window.innerWidth/2),parseInt(this.camera.position.y)-(window.innerHeight/2)]
   },
 
+	mouseDown: function(val){
+		console.log('down', val)
+	}
 
   },
 }
 </script>
 
-<style lang="stylus" scoped>
-@import '../stylus/main'
-
+<style lang="css" scoped>
 .api-iframe{
 	width: 100vw;
 	height: 100vh;
-  left: 0;
-  top: 0;
-  position: absolute;
-	pointer-events: none;  
+	/*pointer-events: none;  */
+	/*height: 100vh;*/
 }
 .wrapper{
 	display:flex;
 	justify-content: center;
 	align-items: center;
-	/*position: relative;*/
+	position: relative;
+	z-index: 4;
 	height: 100vh;
-  z-index: 3;
-  left: 0;
-  top: 0;
-  position: absolute;
   /*background-color: rgba(245,215,195,0.6);*/
 	/*pointer-events: none;*/
 }
+
 .debug{
   pointer-events: all;
   display: flex;
@@ -257,5 +259,8 @@ export default {
   position: absolute;
   right: 0px;
   top: 30px;
+  /*z-index: 1 !important;*/
+  /*position: relative;*/
+
 }
 </style>

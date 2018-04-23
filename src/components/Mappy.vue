@@ -348,11 +348,15 @@ export default {
   transition: all 245ms cubic-bezier(0.0, 0.0, 0.2, 1);
 }
 
+#map{
+
+}
+
 .hidden{
   opacity: 0;
 }
 
 .mapboxgl-canvas{
-  position: relative !important;
+  /*position: relative !important;*/
 }
 </style>

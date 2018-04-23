@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 Vue.use(Vuex)
+import _ from 'lodash'
 
 const mappy = {
   strict: false,
@@ -19,6 +20,7 @@ const mappy = {
     offsetCenterLngLat: null,
     offsetCenterPx: null,
     debug: null,
+    sketchfabLoaded: false,
     sketchfab:{
       cameraOrigin: null,
       camera: null
@@ -63,7 +65,10 @@ const mappy = {
       state.offsetCenterPx = px
     },
     setSketchfab: function(state, sk){
-      state.sketchfab = sk
+      state.sketchfab = _.merge(state.sketchfab, sk)
+    },
+    setSketchfabLoaded: function(state, bool){
+      state.sketchfabLoaded = bool 
     },
   },
   getters: {
@@ -81,6 +86,7 @@ const mappy = {
     bearing: state => state.bearing,
     debug: state => state.debug,
     sketchfab: state => state.sketchfab,
+    sketchfabLoaded: state => state.sketchfabLoaded,
 
   },
   actions: {

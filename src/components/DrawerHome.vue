@@ -37,7 +37,7 @@
 
     </div>
     <transition name="fade">
-    <mappy-mini :disabled="['dragPan', 'dragRotate', 'Keyboard']" v-show="!mini" v-if="menuWidth" container="minimap" :class="['minimap']" zoom="8" :LngLat="[138.7435885246556, -34.38845881895241]" mapStyle="mapbox://styles/edanweis/cjg1u9fq858tt2rmekjscx5qa" :token="credentials.mapbox.token"></mappy-mini> 
+    <mappy-mini :disabled="['dragPan', 'dragRotate', 'Keyboard']" v-show="!mini" v-if="menuWidth && _map" container="minimap" :class="['minimap']" zoom="8" :LngLat="[138.7435885246556, -34.38845881895241]" mapStyle="mapbox://styles/edanweis/cjg1u9fq858tt2rmekjscx5qa" :token="credentials.mapbox.token"></mappy-mini> 
     </transition>
         <!-- <v-layout
           justify-center
@@ -88,7 +88,7 @@ export default {
     }
   },
   computed: {
-    ...Vuex.mapGetters(['mini', 'loading', 'currentGridRef', 'miniWidth', 'menuWidth']),
+    ...Vuex.mapGetters(['mini', 'loading', 'currentGridRef', 'miniWidth', 'menuWidth', '_map']),
 
   },
   methods: {

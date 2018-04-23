@@ -20,7 +20,7 @@
       
     </v-content>
     <v-footer app style="z-index: 2 !important">
-      <img src="./assets/up_logo.svg" class="logo noevents cursordefault"/><span class="white--text pl-2 noevents cursordefault noselect">Terrior 2018</span>
+      <img src="./assets/up_logo.svg" class="logo noevents cursordefault"/><span class="white--text pl-2 noevents cursordefault noselect">terroir 2018</span>
     </v-footer>
   </v-app>
 </template>
@@ -142,6 +142,7 @@ header {
   padding-bottom: 0 !important;
   overflow: hidden !important;
   background-color: #fa9898;
+  z-index: 6;
   // width: 30vw !important;
   // min-width: 200px !important;
   // max-width: 500px !important;

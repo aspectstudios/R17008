@@ -10,11 +10,15 @@
           </v-flex>
         </v-layout>
       </v-container> -->
-      <mappy container="map" zoom="9" :LngLat="[138.829631 ,-34.964802]" mapStyle="mapbox://styles/edanweis/cjg354nvaisvf2srv8vcv3yin" :token="credentials.mapbox.token"></mappy>
 
-      <sketchfab style="" urlid="6d24cec1439841ae8b8231ae973995ae" autospin='0' autostart='1' preload='1' ui_controls='0' ui_infos='0' ui_related='0' transparent='1'></sketchfab>
+
+
+      <mappy  container="map" zoom="9" :LngLat="[138.829631 ,-34.964802]" mapStyle="mapbox://styles/edanweis/cjg354nvaisvf2srv8vcv3yin" :token="credentials.mapbox.token"></mappy>
+
+      <sketchfab v-show="sketchfabLoaded" urlid="6d24cec1439841ae8b8231ae973995ae" autospin='0' autostart='1' preload='1' ui_controls='0' ui_infos='0' ui_related='0' transparent='1' scrolling="yes"></sketchfab>
       <!-- <div class="debug"><pre>{{debug}}</pre></div> -->
       <!-- <northstar></northstar> -->
+
 
       <!-- <div v-if="_mapCenter" class="mapCenter" :style="{'top': projectedCenter.y+'px', 'left': projectedCenter.x+'px'}"></div> -->
       <!-- <div v-if="_mapCenter" class="mapCenter" :style="{'top': projectedCenter.y+'px', 'left': projectedCenter.x+'px'}"></div> -->
@@ -36,15 +40,28 @@ export default {
   },
   data () {
     return {
-      credentials
+      credentials,
+      camera: null
     }
   },
   computed: {
-    ...Vuex.mapGetters(['mini', '_mapCenter', '_map', 'debug', 'sketchfab']),
+    ...Vuex.mapGetters(['mini', '_mapCenter', '_map', 'debug', 'sketchfab', 'sketchfabLoaded']),
 
     projectedCenter: function(){
        return this._map.project(this._mapCenter)
     }
+  },
+  mounted(){
+
+    // this.setSketchfabLoaded(false)
+  },
+  watch:{
+    sketchfabLoaded: function(val){
+      console.log('sk loaded?',val)
+    }
+  },
+  methods:{
+    ...Vuex.mapMutations(['setSketchfabLoaded'])
   }
 }
 </script>
@@ -62,6 +79,7 @@ export default {
   margin-top: -2px;
   z-index: 5;
 }
+
 .debug{
   background-color: white;
   position: absolute;
