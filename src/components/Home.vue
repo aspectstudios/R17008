@@ -12,10 +12,25 @@
       </v-container> -->
 
 
+      <mappy :style="{'pointer-events': sketchfabMode ? 'none': 'all'}" container="map" zoom="12" :LngLat="_mapOrigin.coords" mapStyle="mapbox://styles/edanweis/cjgvrsug4001v2rqhj2zja0nn" :token="credentials.mapbox.token"></mappy>
 
-      <mappy  container="map" zoom="9" :LngLat="[138.829631 ,-34.964802]" mapStyle="mapbox://styles/edanweis/cjg354nvaisvf2srv8vcv3yin" :token="credentials.mapbox.token"></mappy>
+      <div class="overlay"></div>
+      <div :class="['overlay3d', {'sketchfabMode': sketchfabLoaded && sketchfabMode && gridExtruded ? true : false}]"></div>
 
-      <sketchfab v-show="sketchfabLoaded" urlid="6d24cec1439841ae8b8231ae973995ae" autospin='0' autostart='1' preload='1' ui_controls='0' ui_infos='0' ui_related='0' transparent='1' scrolling="yes"></sketchfab>
+    <transition name='fade'>
+      <div class="please-wait noselect" :style="{'width': 'calc( 100vw - ' + menuWidth + 'px)'}" v-if="(!sketchfabLoaded && gridExtruded) && sketchfabMode">
+        Like a fine wine, <br/> sometimes you need to wait.
+      </div>
+    </transition>
+
+      <sketchfab :style="{'opacity': sketchfabLoaded && sketchfabMode && gridExtruded ? 1 : 0, 'transition-delay':  sketchfabLoaded && sketchfabMode && gridExtruded ? 0 : 2000}" v-if="currentGridRef && sketchfabMode" v-show="sketchfabLoaded"  class="sketchfab-wrapper" :urlid="urlid" autospin='0' autostart='1' preload='1' ui_controls='0' ui_infos='0' ui_related='0' transparent='1' scrolling="no"></sketchfab>
+
+      <transition name="slideUp">
+      <bottom-sheet class="bottomsheet" v-if="wineriesHere && !sketchfabMode && !soilMode"></bottom-sheet>
+      </transition>
+
+      <div class="map-overlay" v-if="!blendmode"></div>
+
       <!-- <div class="debug"><pre>{{debug}}</pre></div> -->
       <!-- <northstar></northstar> -->
 
@@ -31,24 +46,32 @@ import credentials from '../credentials';
 import Mappy from './Mappy';
 import Vuex from 'vuex'
 import Sketchfab from './Sketchfab'
+import BottomSheet from './BottomSheet'
+var sketchfabDB = require('../assets/sketchfab-db.js')
 
 export default {
   name: 'home',
   components: {
     Mappy,
-    Sketchfab
+    Sketchfab,
+    BottomSheet
   },
   data () {
     return {
+      sketchfabDB,
       credentials,
       camera: null
     }
   },
   computed: {
-    ...Vuex.mapGetters(['mini', '_mapCenter', '_map', 'debug', 'sketchfab', 'sketchfabLoaded']),
+    ...Vuex.mapGetters(['mini', '_mapCenter', '_map', 'debug', 'sketchfab', 'menuWidth', 'sketchfabLoaded', '_mapOrigin', 'currentGridRef', 'sketchfabMode', 'gridExtruded', 'wineriesHere', 'soilMode', 'blendmode']),
 
     projectedCenter: function(){
        return this._map.project(this._mapCenter)
+    },
+
+    urlid: function(){
+     return this.sketchfabDB[this.currentGridRef.properties.index]
     }
   },
   mounted(){
@@ -58,16 +81,55 @@ export default {
   watch:{
     sketchfabLoaded: function(val){
       console.log('sk loaded?',val)
-    }
+    },
   },
   methods:{
-    ...Vuex.mapMutations(['setSketchfabLoaded'])
+    ...Vuex.mapMutations(['setSketchfabLoaded']),
+
+    remap(num, in_min, in_max, out_min, out_max) {
+        return (num - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
+      },
+
   }
 }
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style>
+
+
+.slideUp-enter-active, .slideUp-leave-active {
+  transition: all 245ms cubic-bezier(.64,.02,.14,.94);
+}
+.slideUp-enter, .slideUp-leave-to {
+  transform: translateY(400px) !important;
+  opacity: 1
+}
+
+.fade-enter-active, .fade-leave-active {
+  transition: all 4845ms cubic-bezier(.23,.49,.32,1.07);
+}
+.fade-enter, .fade-leave-to {
+  transform: translateY(200px) !important;
+  opacity: 0
+}
+
+.map-overlay{
+  pointer-events: none;
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: #a82dae;
+  mix-blend-mode: soft-light;
+  z-index: 4;
+}
+
+
+.bottomsheet{
+  opacity: 1;
+}
 
 .mapCenter{
   width: 4px;
@@ -89,4 +151,59 @@ export default {
   z-index: 2;
   color: black;
 }
+
+.overlay{
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 3;
+  /*background-color: rgba(255,155,130, 0.3);*/
+  pointer-events: none;
+  mix-blend-mode: overlay;
+  background: linear-gradient(to bottom, rgba(56,153,90,0) 0%, rgba(48, 33, 99, 0.54) 100%);
+
+}
+
+.sketchfab-wrapper{
+  transition: opacity 500ms ease-in-out;
+  /*transition-delay: 1500ms;*/
+
+}
+
+.overlay3d{
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 2;
+  opacity: 0;
+  pointer-events: none;
+  background-color: #38995A;
+  transition: opacity 1500ms cubic-bezier(.64,.02,.14,.94);
+}
+
+.overlay3d.sketchfabMode{
+  opacity: 0.8 !important;
+}
+
+.please-wait{
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: Raleway;
+  /*font-weight: 400;*/
+  font-size: 24px;
+  color: #dfefe5;
+  transition: all 145ms cubic-bezier(.64,.02,.14,.94);
+  z-index: 7;
+}
+
+
 </style>

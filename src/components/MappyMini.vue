@@ -9,6 +9,7 @@
       minZoom: 8,
       attributionControl: false,
       zoom: this.zoom,
+
       container: this.container
     }'
     :navControl='{show: false}'
@@ -37,7 +38,7 @@ var grid = require('../assets/grid.json')
 
 export default {
   name: 'Mappy',
-  props: ['disabled', 'LngLat', 'mapStyle', 'container', 'mapStyle', 'features', 'token', 'zoom'],
+  props: ['LngLat', 'mapStyle', 'container', 'mapStyle', 'features', 'token', 'zoom'],
   components:{
     Mapbox
   },
@@ -57,6 +58,7 @@ export default {
   },
   watch: {
     _mapCenter: function(m){   
+      // console.log('map is moving')
       this.updateMapMini()
       this.filterRegion()
       this.fadeGrid()
@@ -64,6 +66,10 @@ export default {
       this.filters.grid ? this._mapmini.setFilter(...this.filters.grid) : null
       this.filters.region ? this._mapmini.setFilter(...this.filters.region) : null
       
+    },
+
+    currentGridRef: function(newVal, oldVal){
+      this.filters.grid = ['gridlayer', ['==', 'index', newVal.properties.index]]
     },
 
   },
@@ -125,14 +131,14 @@ export default {
     },
 
     updateMapMini(){
-      this.setZoomCenter()
       var pm = this._mapmini.project(this.offsetCenterPx)
+      // var gr = this._mapmini.queryRenderedFeatures(pm, {'layers': ['grid']})
+      // if(gr.length){
+      //   this.setCurrentGridRef(gr[0])
+      //   this.filters.grid = ['gridlayer', ['==', 'index', gr[0].properties.index]]
+      // }
+      this.setZoomCenter()
       this.setOffsetCenterPx(pm)
-      var gr = this._mapmini.queryRenderedFeatures(pm, {'layers': ['grid']})
-      if(gr.length){
-        this.setCurrentGridRef(gr[0])
-        this.filters.grid = ['gridlayer', ['==', 'index', gr[0].properties.index]]
-      }
       
     },
 
@@ -153,13 +159,6 @@ export default {
     mapInit(map){
       // save map to component's data
       this.setMapMini(map)
-      if(this.disabled ){
-        for(let d of this.disabled){
-            if(this._mapmini[d]){
-                this._mapmini[d].disable()  
-            }
-          }
-      }
     },
     mapLoad(map){
       var self = this
@@ -214,16 +213,33 @@ export default {
       // this._mapmini.transform._fov = 0.4
     },
     mapClick(map, e){
-       var grid = _.pickBy(map.queryRenderedFeatures(e.lngLat), e=>{
+      // console.log(e)
+       var grid = _.pickBy(this._mapmini.queryRenderedFeatures(e.lngLat), e=>{
         return e.layer.id == "gridlayer"
        })
+       // console.log('mini map click grid', grid)
+       if(grid){
+        this._map.flyTo({center: [e.lngLat.lng, e.lngLat.lat] });
+        // this.offsetflyTo({lng: grid[0].properties.cen_x, lat:grid[0].properties.cen_y})
+       }
        // var p = this._mapmini.queryRenderedFeatures(e.lngLat)
        // console.log('query',this._mapmini.queryRenderedFeatures(e.lngLat))
        // console.log('grid', grid)
-       this._map.flyTo({center: [e.lngLat.lng, e.lngLat.lat] });
        // this._map.flyTo({center: this._mapmini.unproject([e.point.x-61, e.point.y]) });
     },
-    mapZoom(){
+
+    offsetflyTo(center, options){
+      // console.log(options)
+      var c = this._map.project(this._map.getCenter())
+        var offset = this._map.getCenter().lng - this._map.unproject([c.x-(this.menuWidth/2), c.y]).lng
+        var offset2 = this._map.getCenter().lng - this._map.unproject([c.x-(this.menuWidth*6), c.y]).lng
+
+      this._map.flyTo({center: [center.lng+offset, center.lat], pitch: 0, around: [center.lng+offset2, center.lat], ...options});
+    },
+
+    mapZoom(map){
+        map.setBearing(0)
+
 
     },
     mapMove(map){
@@ -261,6 +277,7 @@ export default {
 .mapmini{
   cursor: default !important;
   height: 100vh;
+  width: 100%;
   position: absolute;
   transition: all 245ms cubic-bezier(0.0, 0.0, 0.2, 1);
 }

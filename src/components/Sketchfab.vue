@@ -1,6 +1,6 @@
 <template>
-<div class="wrapper" :style="{'pointer-events':sketchfabLoaded?'none':'all'} ">
-	<iframe class="api-iframe" ref="api_iframe"
+<div class="wrapper" :style="{'pointer-events':sketchfabMode?'all':'none'} ">
+	<iframe v-show="sketchfabLoaded" class="api-iframe" ref="api_iframe"
 		frameborder="0"
 	    :scrolling="scrolling"
 	    marginheight="0"
@@ -8,27 +8,16 @@
 	    >
     </iframe>	
     <div class="debug">
-      <!-- <p>sketchfab: <pre>{{sketchfab}}</pre></p> -->
-      <!-- <p>mapbox: <pre>{{mapbox}}</pre></p> -->
-      <input type="checkbox" name="fb" label="follow" v-model="followMapbox"></input>
-      <label>zoom multi<input type="number" v-model="zoomMultiplier" step="0.001"></input></label>
-      <label>pan multi<input type="number" v-model="panMultiplier" step="0.001"></input></label>
       <label>FOV<input type="number" v-model="FOV" step="1"></input></label>
-      <label>offset X<input type="number" v-model="offsetX" step="0.001"></input></label>
-      <label>offset Y<input type="number" v-model="offsetY" step="0.001"></input></label>
+      <label>pos X<input type="number" v-model="sketchfabNativePos.camera.position.x" step="1"></input></label>
+      <label>pos Y<input type="number" v-model="sketchfabNativePos.camera.position.y" step="1"></input></label>
+      <label>pos Z<input type="number" v-model="sketchfabNativePos.camera.position.z" step="1"></input></label>
 
-      <div v-if="mapboxOrigin"  v-html="'<strong>mapboxOrigin:</strong> '+String(parseInt(mapboxOrigin[0]))+' '+String(parseInt(mapboxOrigin[1]))"></div>
-      <div v-if="sketchfabOrigin" v-html="'<strong>sketchfabOrigin:</strong> '+String(parseInt(sketchfabOrigin[0]))+' '+String(parseInt(sketchfabOrigin[1]))"></div>
-      <div v-if="sketchfabCurrentPos" v-html="'<strong>sketchfabCurrent:</strong> '+String(sketchfabCurrentPos)"></div>
-      <div v-if="mapboxCurrentPos" v-html="'<strong>mapboxCurrentPos:</strong> '+String(mapboxCurrentPos)"></div>
-      <p>position/eye</p>
-      <label>x<input type="number" v-model="cam.source.x" step="1"></input></label>
-      <label>y<input type="number" v-model="cam.source.y" step="1"></input></label>
-      <label>z<input type="number" v-model="cam.source.z" step="1"></input></label>
-      <p>target</p>
-      <label>x<input type="number" v-model="cam.target.x" step="1"></input></label>
-      <label>y<input type="number" v-model="cam.target.y" step="1"></input></label>
-      <label>z<input type="number" v-model="cam.target.z" step="1"></input></label>
+      <label>target X<input type="number" v-model="sketchfabNativePos.camera.target.x" step="1"></input></label>
+      <label>target Y<input type="number" v-model="sketchfabNativePos.camera.target.y" step="1"></input></label>
+      <label>target Z<input type="number" v-model="sketchfabNativePos.camera.target.z" step="1"></input></label>
+      <button name="readCamera" @click="readCamera()">read cam</button>
+      <div>sketchfab camera: </div> <pre>{{sketchfabNativePos}}</pre>
     </div>
 
 </div>
@@ -41,183 +30,255 @@ var sketchfab = require('../sketchfab-viewer-1.1.0.js')
 export default {
 
   name: 'sketchfab',
-  props: ['urlid','autospin','autostart','preload','ui_controls','ui_infos','ui_related', 'scrolling'],
+  props: ['urlid', 'autospin','autostart','preload','ui_controls','ui_infos','ui_related', 'scrolling'],
   components: {},
   data () {
     return {
+      client: null,
+      loadInterval: null,
+      sketchfabconsole: null,
       camera: null,
-      cam: {
-        source: {
-        x: -.95,
-        y: 6.6,
-        z: 124.8
-      },
-      target: {
-        x: -1.05,
-        y: -6.7,
-        z: 1
-      }
-      },
-      offsetX: 6.2,
-      offsetY: 1.3,
-      FOV: 20,
+      FOV: 36,
     	_api: null,
     	_client: null,
-      panMultiplier: 0.064,
-      zoomMultiplier: 17.3,
-      mapboxOrigin: null,
-      sketchfabOrigin: null,
-      sketchfabCurrentPos: null,
-      sketchfabNativePos: null,
-      mapboxCurrentPos: null,
-      followMapbox: true,
-      sk:null,
-      skOrigin: null,
+      sketchfabNativePos: {
+        camera: {
+          position: {x: null, y: null, z: null},
+          target: {x: null, y: null, z: null},
+      },
+    }
     }
   },
+  beforeDestroy(){
+    // this.toggleLaunch3D()
+  },
   mounted(){
-  	var self = this
-  	var client = new sketchfab.Sketchfab( this.$refs.api_iframe )
 
-
-  	client.init( this.urlid, {
-  	   success: function onSuccess( api ){	
-  	   	self._api = api
-           self._api.load()
-  	       self._api.start()
-  	       self._api.addEventListener( 'viewerready', function() {
-  	           console.log( 'Viewer is ready' )
-               self.setSketchfabLoaded(true)
-               self.getSketchfabCamera()
-               self.getMapboxOrigin()
-  	       } )
-  	   },
-  	   error: function onError() {
-  	       console.log( 'Viewer error' )
-  	   },
-  	   autospin: self.autospin,
-  	   autostart: self.autostart,
-  	   preload: self.preload,
-  	   ui_controls: self.ui_controls,
-  	   ui_infos: self.ui_infos,
-  	   ui_related: self.ui_related,
-  	   transparent: '1',
-  	   camera: '0',
-  	   scrollwheel: '0',
-  	} )
-
-    
+    // init viewer for the first time.
+    this.initViewer(this.urlid)
 
   },
   computed:{
-	...Vuex.mapGetters(['_map', 'sketchfab', '_mapCenter', 'sketchfabLoaded']),
+	...Vuex.mapGetters(['_map', 'sketchfab', '_mapCenter', 'sketchfabLoaded', '_mapOrigin', 'mapbox', 'currentGridRef', 'sketchfabMode', 'gridExtruded']),
+
 
   },
   watch:{
-
-    cam: {
+    //watch when the urlid changes.
+    // urlid: function(val){
+    //   // this.client = null
+    //   this.initViewer(val)
+    // },
+    sketchfabNativePos: {
       handler: function(val){
-      var lookat = [[
-          val.source.x,
-          val.source.y,
-          val.source.z
-          ],[
-          val.target.x,
-          val.target.y,
-          val.target.z
-          ]]
-        // console.log('setting camera')
-        // this._api.setCameraLookAt(lookat[0], lookat[1], 0.01)        
+        console.log('camera change')
+        var self = this;
+
+        this._api.lookat(
+          [self.sketchfabNativePos.camera.position.x, 
+          self.sketchfabNativePos.camera.position.y,
+          self.sketchfabNativePos.camera.position.z],
+
+          [self.sketchfabNativePos.camera.target.x, 
+          self.sketchfabNativePos.camera.target.y, 
+          self.sketchfabNativePos.camera.target.z])
+        
       },
     deep:true
     },
 
+    camera: {
+      handler: function(val){
+          var self = this;
+          self.sketchfabNativePos.camera.position.x = val.position[0] 
+          self.sketchfabNativePos.camera.position.y = val.position[1]
+          self.sketchfabNativePos.camera.position.z = val.position[2]
+          self.sketchfabNativePos.camera.target.x = val.target[0]  
+          self.sketchfabNativePos.camera.target.y = val.target[1]  
+          self.sketchfabNativePos.camera.target.z = val.target[2]
+        },
+    deep:true
+    },
+
+
     FOV: function(val){
       this._api.setFov(val)
+      // this._map.transform.fov = val
     },
-  	_mapCenter: function(val){
-      var self = this
-       // this._api.getCameraLookAt( function( err, camera ){
-       //   self.camera = camera
-       // })
-       console.log('_mapCenter', val)
-      this._mapCenterPx = this._map.project(val)
-
-       if(!this.mapboxOrigin){
-         this.getMapboxOrigin()
-       }
-       this.getSketchfabCamera()
-       this.getSketchfabCameraNative()
-       
-       // console.log(this.camera.position)
-       if(!self.sketchfabOrigin){
-         self.skOrigin = [this.camera.position.map(e=>{return parseInt(e)}), this.camera.target.map(e=>{return parseInt(e)})]
-       }
-
-       this.setSketchfab({
-         cameraOrigin: this.skOrigin,
-         camera: this.sk
-       })
-       
-       // console.log('have x?', val)
-       this.mapboxCurrentPos = [parseInt(this._mapCenterPx.x)-(window.innerWidth/2), parseInt(this._mapCenterPx.y)-(window.innerHeight/2)]
-
-
-       if(this.sketchfabNativePos){
-         var lookat = [[
-             (self.mapboxCurrentPos[0]*-self.panMultiplier)-this.offsetX,
-             (self.mapboxCurrentPos[1]*self.panMultiplier-2)-this.offsetY,
-             // self.sketchfabNativePos.position[2]
-             self._map.getZoom() * self.zoomMultiplier
-             ],[
-             (self.mapboxCurrentPos[0]*-self.panMultiplier)-this.offsetX,
-             (self.mapboxCurrentPos[1]*self.panMultiplier)-this.offsetY,
-             self.sketchfabNativePos.target[2]
-             ]]
-           // console.log(lookat)
-         if(this.followMapbox){
-           // console.log(self.sketchfabNativePos)
-           console.log("lookat: ",lookat[0], lookat[1])
-           this._api.setCameraLookAt(lookat[0], lookat[1], 0)      
-         }
-       }
-      
-      
-     }
     
   },
   methods:{
 	...Vuex.mapMutations(['setSketchfab', 'setSketchfabLoaded']), 
 	...Vuex.mapActions([]), 
 
-  getSketchfabCamera(){
-    var self = this
-    var cp = this._api.getCameraLookAt( function( err, camera ){
-      // console.log(camera)
-        self.sketchfabCurrentPos = [camera.position.map(e=>{return parseInt(e)}), camera.target.map(e=>{return parseInt(e)})]
+  initViewer(id){
+      var self = this
+      this.client = new sketchfab.Sketchfab( this.$refs.api_iframe )
+      this.client.init( id, {
+         success: function onSuccess( api ){  
+          self._api = api
+             // self._api.load()
+             self._api.start()
+             self._api.addEventListener( 'viewerready', function() {
+                 // console.log( 'Viewer is ready' )
+                 // self.getMapboxOrigin()
+                 // self.getSketchfabCamera()
+                 self.readyHandler()
 
-        if(!self.sketchfabOrigin){
-          self.sketchfabOrigin = [camera.position.map(e=>{return parseInt(e)}), camera.target.map(e=>{return parseInt(e)})]
-        }
-    } )
+             } )
+         },
+         error: function onError() {
+             console.log( 'Viewer error' )
+         },
+         autospin: self.autospin,
+         autostart: self.autostart,
+         preload: self.preload,
+         ui_controls: self.ui_controls,
+         ui_infos: self.ui_infos,
+         ui_related: self.ui_related,
+         transparent: '0',
+         camera: '0',
+         // autospin:0.01,
+         scrollwheel: '1',
+         ui_hint: 0,
+         ui_inspector: 0,
+         ui_vr: 0,
+
+      } )
   },
 
-  getSketchfabCameraNative(){
+  remap(num, in_min, in_max, out_min, out_max) {
+    return (num - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
+  },
+
+  readyHandler(){
+    var self = this
+
+
+    this._api.getCameraLookAt( function( err, camera ){
+      // camera.position[0] =this.remap(this.$vuetify.breakpoint.width, 300, 1920, 79306, 31765)
+      // camera.position[1] =this.remap(this.$vuetify.breakpoint.width, 300, 1920, -541748, -247959)
+      // camera.position[2] =this.remap(this.$vuetify.breakpoint.width, 300, 1920, 328844, 119595)
+
+      // camera.target[0] =this.remap(this.$vuetify.breakpoint.width, 300, 1920, 72432, 30986)
+      // camera.target[1] =this.remap(this.$vuetify.breakpoint.width, 300, 1920, -37468, -33688)
+      // camera.target[2] =this.remap(this.$vuetify.breakpoint.width, 300, 1920, 13404, 21577)
+
+      camera.position[0] = 16336
+      camera.position[1] = -5366
+      camera.position[2] = 238583
+      camera.target[0] = 16368
+      camera.target[1] = -2261
+      camera.target[2] = 40901
+
+      self._api.lookat(camera.position,camera.target, 0)
+      self.camera = camera
+    })
+
+    this._api.getMaterialList( function( err, materials ) {
+      var terrain = materials.find(e => e.name == String(self.currentGridRef.properties.index)+'terrain')
+      var wall = materials.find(e => e.name == String(self.currentGridRef.properties.index)+'wall')
+        // console.log('terrain', terrain);
+        // console.log('wall', wall);
+      terrain.channels.AlbedoPBR.enable = true
+      terrain.channels.DiffusePBR.enable = false
+      terrain.channels.Displacement.enable = false
+      terrain.channels.EmitColor.enable = false
+      terrain.channels.GlossinessPBR.factor = 0.862337655732126
+      terrain.channels.GlossinessPBR.texture = {
+        internalFormat: "LUMINANCE",
+        magFilter: "LINEAR",
+        minFilter: "LINEAR_MIPMAP_LINEAR",
+        texCoordUnit: 0,
+        textureTarget: "TEXTURE_2D",
+        uid: terrain.channels.SpecularColor.texture.uid,
+        wrapS: "REPEAT",
+        wrapT: "REPEAT"
+      }
+
+      terrain.channels.MetalnessPBR.enable = true
+      terrain.channels.MetalnessPBR.factor = 1
+      terrain.channels.MetalnessPBR.texture = {
+         internalFormat: "LUMINANCE",
+         magFilter: "LINEAR",
+         minFilter: "LINEAR_MIPMAP_LINEAR",
+         texCoordUnit: 0,
+         textureTarget: "TEXTURE_2D",
+         uid: terrain.channels.SpecularColor.texture.uid,
+         wrapS: "REPEAT",
+         wrapT: "REPEAT"
+      }
+
+      terrain.channels.Opacity.enable = false
+      terrain.channels.SpecularColor.factor = 0.25
+      terrain.channels.SpecularF0.enable = true
+      terrain.channels.SpecularPBR.enable = false
+
+      wall.channels.AlbedoPBR.enable = true
+      wall.channels.DiffusePBR.enable = false
+      wall.channels.Displacement.enable = false
+      wall.channels.GlossinessPBR.factor = 0.2017
+      wall.channels.MetalnessPBR.enable = true
+      wall.channels.MetalnessPBR.factor = 0.05
+      wall.channels.Opacity.enable = true
+      wall.channels.Opacity.enable = true
+      wall.channels.Opacity.factor = 0
+
+      wall.channels.SpecularF0.enable = true
+      wall.channels.SpecularF0.factor = 0.77142
+      terrain.channels.SpecularPBR.enable = false
+
+        self.updateMaterial(terrain)
+        self.updateMaterial(wall)
+    } );
+
+
+
+    this._api.getPostProcessing(function(settings) {
+        console.log(settings)
+        settings.colorBalanceEnable = true
+        settings.colorBalanceHigh =  [
+                        -0.08888891008165145,
+                        -0.055555576748318125,
+                        0.0777777778
+                    ]
+        settings.colorBalanceLow = [0,0,-0.006]
+        settings.colorBalanceMid = [0.1111110899183485,0.09999997880723743,-2.1192762544863797e-8]
+        settings.grainEnable = true
+        settings.grainFactor = 0.15
+        settings.sharpenEnable = true
+        settings.shapenFactor = 0.15802467252001406
+        settings.toneMappingEnable = true
+        settings.toneMappingBrightness = -0.0222222434149848
+        settings.toneMappingContrast =  -5.419253939640231e-9
+        settings.toneMappingExposure = 0.7888888676961263
+        settings.saturation = 0.9666666667
+
+        self._api.setPostProcessing(settings, function(){
+          console.log('post processing updated!')
+        })
+    } );
+
+
+    this.setSketchfabLoaded(true)
+
+  },
+
+  readCamera(){
     var self = this
     this._api.getCameraLookAt( function( err, camera ){
-      // console.log(camera)
-      self.sketchfabNativePos = camera
-        // return camera
-    } )
-
+        self.camera = camera
+    })    
   },
 
-  getMapboxOrigin(){  
-      console.log('have camera?', this.camera)  
-      this.mapboxOrigin = [this._mapCenterPx.x,this._mapCenterPx.y]
-      // this.mapboxOrigin = [parseInt(this.camera.position.x)-(window.innerWidth/2),parseInt(this.camera.position.y)-(window.innerHeight/2)]
-  },
+  updateMaterial(materialToUpdate){
+    var self = this;
+    // var materialToUpdate
+    this._api.setMaterial( materialToUpdate, function() {
+        console.log( 'Material updated' );
+    });
 
+  }
 
   },
 }
@@ -232,7 +293,7 @@ export default {
   left: 0;
   top: 0;
   position: absolute;
-	pointer-events: none;  
+	// pointer-events: none;  
 }
 .wrapper{
 	display:flex;
@@ -248,14 +309,17 @@ export default {
 	/*pointer-events: none;*/
 }
 .debug{
+  font-size: 10px;
   pointer-events: all;
-  display: flex;
+  // display: flex;
+  display:none;
   flex-direction: column;
   width: 30vw;
   height: 100vh;
-  background-color: rgba(255,255,255,0.8);
+  background-color: rgba(85, 51, 85, 0.2);
   position: absolute;
   right: 0px;
   top: 30px;
+  color: white;
 }
 </style>

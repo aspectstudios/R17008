@@ -1,0 +1,18 @@
+change materials, etc. in viewer mode.
+
+patch all models on sketchfab.
+
+options to show.hide layers.
+	create settings panel
+
+add lat/lng coordinates
+	design info panel
+
+terrain profile
+	? or add ticks and redo one section
+
+settings page -slide out
+	sd / hd modes for sketchfab.
+
+tablet controls/corrections - ensure works in apple
+enable touch controls
