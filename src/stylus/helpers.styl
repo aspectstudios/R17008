@@ -16,6 +16,24 @@ $button_width = 85px
 }
   
 
+
+.fade-slide-up-enter-active, .fade-slide-up-leave-active {
+  transition: all 145ms cubic-bezier(0.0, 0.0, 0.2, 1);
+}
+.fade-slide-up-enter{
+  opacity: 0;
+  transform: translateY(100px);
+}
+
+.fade-slide-up-leave{
+	transform: translateY(-100px);	
+}
+.fade-slide-up-leave-to{
+	opacity: 0
+}
+
+  
+
 .overflowhidden {
 	overflow: hidden !important;
 }

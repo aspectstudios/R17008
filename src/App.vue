@@ -51,7 +51,13 @@
 
     
     <v-footer app style="z-index: 2 !important">
-      <img src="./assets/up_logo.svg" class="logo noevents cursordefault noselect"/><span class="white--text pl-2 noevents cursordefault noselect">terroir 2018</span> <span class="bestviewed allevents noselect" v-if="bestviewed">Best viewed in Chrome or Safari on a notebook or desktop computer.<v-icon @click="!bestviewed" class="allevents">close</v-icon> </span>
+      <img src="./assets/up_logo.svg" class="logo noevents cursordefault noselect"/><span class="white--text pl-2 noevents cursordefault noselect">terroir 2018</span>
+
+      <transition name="fade-slide-up" appear>
+      <span class="bestviewed allevents noselect" v-if="bestviewed">Best viewed in Chrome or Safari on a notebook or desktop computer.<v-btn icon @click="bestviewed = false" small><v-icon style="padding-left:10px;font-size:13px; pointer-events:all" class="allevents white--text">cancel</v-icon></v-btn> </span>
+    </transition>
+
+
     </v-footer>
   </v-app>
 </template>
