@@ -11,6 +11,7 @@ import axios from 'axios'
 import VueAxios from 'vue-axios'
 Vue.use(VueAxios, axios)
 
+var from = require('array.from');
 
 Vue.config.productionTip = false
 

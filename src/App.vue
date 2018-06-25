@@ -12,6 +12,7 @@
         <span>Back to 2D Map</span>
       </v-tooltip>
 
+
       <transition name="fadeIn">
       <v-toolbar-side-icon v-if="mini" class="white--text menu-icon mapboxBG" @click.stop="mini = !mini"></v-toolbar-side-icon>
       <v-btn icon @click.native.stop="mini =!mini" class="menu-icon mapboxBG" v-else>
@@ -21,19 +22,36 @@
     </v-toolbar>
 
     <v-content>
+      <v-alert v-if="staging" :style="{'pointer-events': 'all', 'z-index': '99 !important', 'top':'-7px', 'width':'calc( 100%  - '+this.menuwidth+'px )', 'right': this.menuWidth+'px', 'text-align': 'right' }" :value="true" type="warning" class="black--text" dismissible>
+      Warning: You are on our testing website! - please visit <a href="https://ahwr-3d.surge.sh">ahwr-3d.surge.sh</a>
+    </v-alert>
       <router-view></router-view>
       <v-dialog v-model="dialog" max-width="500px">
              <v-card>
                <v-card-text>
                  <img src="./assets/terroir.svg" class="terroir-logo">
                  <div class="body">By Urban&amp;Public</div>
+                 <div class="body">3D terrain aerial photo imagery by Nearmap Ltd.</div>
                </v-card-text>
              </v-card>
            </v-dialog>
-      
+    
+      <!-- <v-tooltip left> -->
+    <transition name="fade-slide-left">
+    <div v-if="sketchfabMode" class="slider-wrapper">
+    <div class="slider-caption" >Vertical terrain exaggeration</div>
+    <div class="slider">
+       <v-slider  color="white" v-show="true"  v-model="exaggeration" thumb-label prepend-icon="filter_hdr" ></v-slider>
+    </div>
+    </div>
+  </transition>
+      <!-- </v-tooltip> -->
+
     </v-content>
+
+    
     <v-footer app style="z-index: 2 !important">
-      <img src="./assets/up_logo.svg" class="logo noevents cursordefault noselect"/><span class="white--text pl-2 noevents cursordefault noselect">terroir 2018</span>
+      <img src="./assets/up_logo.svg" class="logo noevents cursordefault noselect"/><span class="white--text pl-2 noevents cursordefault noselect">terroir 2018</span> <span class="bestviewed allevents noselect" v-if="bestviewed">Best viewed in Chrome or Safari on a notebook or desktop computer.<v-icon @click="!bestviewed" class="allevents">close</v-icon> </span>
     </v-footer>
   </v-app>
 </template>
@@ -50,11 +68,19 @@ export default {
   data (){ 
     return {
       token: credentials.mapbox.token,
-      mini: null
+      mini: null,
+      bestviewed: true,
+      exaggeration: 1
     }
   },
   computed:{
-    ...Vuex.mapGetters(['miniWidth', 'menuWidth', 'sketchfabMode', 'wineries', '_map', '_mapmini', 'dialog']),
+    ...Vuex.mapGetters(['miniWidth', 'menuWidth', 'sketchfabMode', 'wineries', '_map', '_mapmini', 'dialog', 'getExaggeration']),
+
+    staging: function(){
+      var s = window.location.href.indexOf('staging') > -1 ? true : false
+      console.log(s)
+      return s
+    }
 
   },
   created(){
@@ -76,9 +102,15 @@ export default {
       this.setMenuWidth(this.getMenuWidth())
       // console.log('set menuwidth:', this.menuWidth)
     },
+
+    exaggeration: function(val){
+      // console.log(val*0.03)
+      this.setExaggeration(val)
+    }
   },
+
   methods: {
-    ...Vuex.mapMutations(['setMini', 'setMenuWidth', 'setMapWidth', 'setSketchfabMode']),
+    ...Vuex.mapMutations(['setMini', 'setMenuWidth', 'setMapWidth', 'setSketchfabMode', 'setExaggeration']),
 
     getMenuWidth: function(){
       if(this.mini){
@@ -213,7 +245,7 @@ header span {
   background: transparent !important;
 }
 .logo{
-  margin-left: 100px
+  margin-left: 100px;
   width: 20px;
 }
 
@@ -225,6 +257,20 @@ header span {
   margin: 60px;
   top: 60px;
 }
+
+.bestviewed{
+  background-color: rgba(0,0,0,0.8);
+  color: white;
+  font-size: 11px;
+  margin: 0 1em;
+  padding: 0.1em 1em;
+  border-radius: 3px;
+  line-height: 1.2em;
+  display: flex-inline;
+  justify-content: center;
+  align-items: center;
+  
+}
 // .navigationDrawer::after{
 //   position: relative;
 //   width: 100px;
@@ -233,5 +279,35 @@ header span {
 //   left: 0px;
   
 // }
+
+.slider-wrapper{
+  position: absolute;
+  top:51px;
+  left: 35px;
+}
+
+.slider-wrapper i{
+  color:white !important;
+}
+
+.slider{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  // position: absolute;
+  width: 150px;
+  height: auto;
+  // top: 34px;
+  z-index: 99 !important;
+  // border-radius: 4px;
+  // padding: 10px;
+  color: white;
+}
+
+.slider-caption{
+  color: white;
+  line-height: 0.9em;
+}
 
 </style>

@@ -7,7 +7,7 @@
 	    marginwidth="0"
 	    >
     </iframe>	
-    <div class="debug">
+    <!-- <div class="debug">
       <label>FOV<input type="number" v-model="FOV" step="1"></input></label>
       <label>pos X<input type="number" v-model="sketchfabNativePos.camera.position.x" step="1"></input></label>
       <label>pos Y<input type="number" v-model="sketchfabNativePos.camera.position.y" step="1"></input></label>
@@ -18,14 +18,16 @@
       <label>target Z<input type="number" v-model="sketchfabNativePos.camera.target.z" step="1"></input></label>
       <button name="readCamera" @click="readCamera()">read cam</button>
       <div>sketchfab camera: </div> <pre>{{sketchfabNativePos}}</pre>
-    </div>
+    </div> -->
 
 </div>
 </template>
 
 <script>
 import Vuex from 'vuex'
-var sketchfab = require('../sketchfab-viewer-1.1.0.js')
+var sketchfab = require('../sketchfab-viewer-1.2.1.js')
+
+import {mat4} from 'gl-matrix'
 
 export default {
 
@@ -57,9 +59,10 @@ export default {
     // init viewer for the first time.
     this.initViewer(this.urlid)
 
+
   },
   computed:{
-	...Vuex.mapGetters(['_map', 'sketchfab', '_mapCenter', 'sketchfabLoaded', '_mapOrigin', 'mapbox', 'currentGridRef', 'sketchfabMode', 'gridExtruded']),
+	...Vuex.mapGetters(['_map', 'sketchfab', '_mapCenter', 'sketchfabLoaded', '_mapOrigin', 'mapbox', 'currentGridRef', 'sketchfabMode', 'gridExtruded', 'qualityTexture', 'getExaggeration']),
 
 
   },
@@ -69,22 +72,43 @@ export default {
     //   // this.client = null
     //   this.initViewer(val)
     // },
-    sketchfabNativePos: {
-      handler: function(val){
-        console.log('camera change')
-        var self = this;
+    
+    // sketchfabNativePos: {
+    //   handler: function(val){
+    //     console.log('camera change')
+    //     var self = this;
 
-        this._api.lookat(
-          [self.sketchfabNativePos.camera.position.x, 
-          self.sketchfabNativePos.camera.position.y,
-          self.sketchfabNativePos.camera.position.z],
+    //     this._api.lookat(
+    //       [self.sketchfabNativePos.camera.position.x, 
+    //       self.sketchfabNativePos.camera.position.y,
+    //       self.sketchfabNativePos.camera.position.z],
 
-          [self.sketchfabNativePos.camera.target.x, 
-          self.sketchfabNativePos.camera.target.y, 
-          self.sketchfabNativePos.camera.target.z])
+    //       [self.sketchfabNativePos.camera.target.x, 
+    //       self.sketchfabNativePos.camera.target.y, 
+    //       self.sketchfabNativePos.camera.target.z])
         
-      },
-    deep:true
+    //   },
+    // deep:true
+    // },
+
+    getExaggeration: function(val){
+      var self = this
+      this._api.getMatrix( 406, function( err, matrices ) {
+            if(!err){
+              var scaledMatrix = mat4.create();
+              console.log('matrices', matrices)
+              // var scale = Number(leftValue);
+              mat4.fromScaling(scaledMatrix, [1,Math.max(0.1,val*0.02), 1]);
+              self._api.setMatrix( 406, scaledMatrix );
+            }
+      });
+
+    },
+
+    qualityTexture: function(newVal, oldVal){
+      if(newVal != oldVal){
+          this.changeQuality(newVal)
+      } 
     },
 
     camera: {
@@ -118,7 +142,13 @@ export default {
          success: function onSuccess( api ){  
           self._api = api
              // self._api.load()
+             api.setTextureQuality( self.qualityTexture)
              self._api.start()
+
+             // api.getMatrix( 407, function( err, matrices ) {
+             //       if(!err){console.log(matrices)}
+             // });
+
              self._api.addEventListener( 'viewerready', function() {
                  // console.log( 'Viewer is ready' )
                  // self.getMapboxOrigin()
@@ -128,9 +158,9 @@ export default {
              } )
          },
          error: function onError() {
-             console.log( 'Viewer error' )
+             // console.log( 'Viewer error' )
          },
-         autospin: self.autospin,
+         autospin: 0.1,
          autostart: self.autostart,
          preload: self.preload,
          ui_controls: self.ui_controls,
@@ -151,9 +181,41 @@ export default {
     return (num - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
   },
 
+  changeQuality(q){
+    var self = this
+        this._api.setTextureQuality( self.q, function(){
+          console.log('Texture quality set to ' + self.q);
+      })
+  },
+
   readyHandler(){
     var self = this
+    
+    // this._api.getMatrix(408, function(err, matrices){
+    //     if(!err){console.log(matrices)}
+    // })
 
+    // this._api.getNodeMap( function ( err, nodes ) {
+    //   if ( !err ) {
+    //       var index;
+    //       console.log('nodemap: ', nodes)
+    //       for (var key in Object.keys(nodes)){
+    //           index = Object.keys(nodes)[key];
+    //           if ((nodes[index].type == "MatrixTransform")&&(typeof nodes[index].name !== "undefined")){
+    //               matrixTransformName = nodes[index].name;
+    //               geometries[matrixTransformName] = {id: index};
+
+    //           }
+    //       }
+    //   }
+    // }),
+
+
+
+    // this._api.hide(408) 
+    // this._api.hide(436)
+
+    
 
     this._api.getCameraLookAt( function( err, camera ){
       // camera.position[0] =this.remap(this.$vuetify.breakpoint.width, 300, 1920, 79306, 31765)

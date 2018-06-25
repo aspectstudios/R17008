@@ -6,6 +6,14 @@ $button_width = 85px
 .fade-enter, .fade-leave-active {
   opacity: 0
 }
+	
+.fade-slide-left-enter-active, .fade-slide-left-leave-active {
+  transition: all 145ms cubic-bezier(0.0, 0.0, 0.2, 1);
+}
+.fade-slide-left-enter, .fade-slide-left-leave-active {
+  opacity: 0;
+  transform: translateX(-100px);
+}
   
 
 .overflowhidden {

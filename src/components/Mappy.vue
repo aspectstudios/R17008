@@ -84,7 +84,7 @@ export default {
     },
 
     soilMode: function(val){
-        console.log('detected soil mode change')
+        // console.log('detected soil mode change')
         this.toggleSoilMode(val)
     },
 
@@ -287,7 +287,7 @@ export default {
 
       var g = map.queryRenderedFeatures(e.point, { layers: ['gridlayer']})
       if(g.length && !this.sketchfabMode){
-        console.log('extruding grid...')
+        // console.log('extruding grid...')
         this.changedGrid = false
         this.extrudeGrid(g, this.currentGridRef)
       } else {
@@ -339,12 +339,12 @@ export default {
     },
 
     toggleSoilMode(state){
-      console.log('toggling soil to ', state)
+      // console.log('toggling soil to ', state)
 
-      this.layerToggle(!state, ['3dmask', 'winery-1j2w4g', 'grid', 'winery', 'ahwr-regions', 'ahwr-regions-line', 'ahwr-regions-solid', 'winery-info', 'gridlayer-line', 'gridlayer', 'soil', 'soil-labels','ahwr-regions-mouseover', 'region-boundary-dissolved', 'ahwr-regions line behind stroke','3d-buildings',], 'ahwr-regions-solid')      
+      this.layerToggle(!state, ['3dmask', 'winery-1j2w4g', 'grid', 'winery', 'ahwr-regions', 'ahwr-regions-line', 'ahwr-regions-solid', 'winery-info', 'gridlayer-line', 'gridlayer', 'soil', 'soil-labels','ahwr-regions-mouseover', 'region-boundary-dissolved', 'ahwr-regions line behind stroke','3d-buildings','mapbox-satellite'], 'ahwr-regions-solid')      
       
       if(state){
-        this._map.setPaintProperty('soil', 'fill-opacity', 1)
+        this._map.setPaintProperty('soil', 'fill-opacity', 0.8)
         this._map.setPaintProperty('soil-labels', 'text-opacity', 1)
       } else{
         this._map.setPaintProperty('soil', 'fill-opacity', 0)

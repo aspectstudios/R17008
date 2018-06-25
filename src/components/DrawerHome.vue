@@ -46,8 +46,8 @@
       </div>
 
       <div class="item">
-        <v-tooltip left>  
-        <v-btn v-if="!sketchfabMode" slot="activator" @click="currentGridRef ? toggleLaunch3D() : null" icon large :ripple="false" :class="['white--text', 'menu-btn', 'allevents']">
+        <v-tooltip left v-model="tooltipshow">  
+        <v-btn v-if="!sketchfabMode" slot="activator" @click="currentGridRef ? tl3d() : null" icon large :ripple="false" :class="['white--text', 'menu-btn', 'allevents']">
           <span class="three-d"><img src="../assets/3d.svg" style="width: 55%; top: 2px; position: relative" ></span>
         </v-btn>
       <!--   <span>See in 3D</span>
@@ -59,16 +59,23 @@
            <v-progress-circular v-if="(!sketchfabLoaded || !gridExtruded) && sketchfabMode"indeterminate color="white" class="noevents"></v-progress-circular>
           <v-icon v-else-if="gridExtruded && sketchfabLoaded && sketchfabMode">done</v-icon>
         </v-btn>
-        <span>3D Terrain</span>
+        <span>3D Terrain mode</span>
       </v-tooltip>
       </div>
 
         <div class="item">
       <v-tooltip left>      
-          <v-btn slot="activator" :disabled="sketchfabMode" @click="enterSoilMode()"  icon large class="white--text menu-btn allevents"><v-icon>layers</v-icon></v-btn>
-        <span>Show / Hide layers</span>
+          <v-btn slot="activator" :disabled="sketchfabMode" @click="enterSoilMode()"  icon large class="white--text menu-btn allevents"><v-icon v-text="soilMode ? 'layers_clear' : 'layers'" ></v-icon></v-btn>
+        <span v-text="soilMode ? 'Turn off soil layer' : 'Turn on soil layer'"></span>
       </v-tooltip>
         </div>
+
+<!--         <div class="item">
+      <v-tooltip left>      
+          <v-btn slot="activator" @click="changeQuality()" icon large class="white--text menu-btn allevents"><span v-text="qualityString" class="quality"></span></v-btn>
+        <span v-text="'Slow performance? Change display quality'"></span>
+      </v-tooltip>
+        </div> -->
 
       <div class="item">
         <v-tooltip left>  
@@ -83,7 +90,7 @@
 
     </div>
     <transition name="fade">
-    <mappy-mini v-show="!mini" v-if="menuWidth && _map" container="minimap" :class="['minimap']" zoom="8" :LngLat="[138.7435885246556, -34.38845881895241]" mapStyle="mapbox://styles/edanweis/cjgq4p70p00122rl16bennnu6" :token="credentials.mapbox.token"></mappy-mini> 
+    <mappy-mini v-show="!mini" v-if="menuWidth && _map" container="minimap" :class="['minimap']" zoom="8" :LngLat="[138.7435885246556, -34.38845881895241]" mapStyle="mapbox://styles/edanweis/cjio5nk6p1tz32qpbtjdkd8xv" :token="credentials.mapbox.token"></mappy-mini> 
     </transition>
 
         <!-- <v-layout
@@ -114,6 +121,7 @@ export default {
   data () {
     return {
       credentials,
+      tooltipshow: false,
       dialog: false,
       huerotate: 0,
       north: null,
@@ -142,13 +150,24 @@ export default {
     }
   },
   computed: {
-    ...Vuex.mapGetters(['mini', 'loading', 'currentGridRef', 'miniWidth', 'menuWidth', '_map', 'bearing', 'gridExtruded', 'sketchfabLoaded', 'sketchfabMode', 'soilMode', 'blendmode']),
+    ...Vuex.mapGetters(['mini', 'loading', 'currentGridRef', 'miniWidth', 'menuWidth', '_map', 'bearing', 'gridExtruded', 'sketchfabLoaded', 'sketchfabMode', 'soilMode', 'blendmode', 'qualityTexture', 'getExaggeration']),
+
+    qualityString: function(){
+    	var s = {ld: 'low', sd: 'med', hd: 'high'}
+    	return s[this.qualityTexture]
+    }
   },
+
   methods: {
-    ...Vuex.mapMutations(['toggleLaunch3D', 'setSoilMode', 'toggleDialog', 'toggleBlendmode']),
+    ...Vuex.mapMutations(['toggleLaunch3D', 'setSoilMode', 'toggleDialog', 'toggleBlendmode','setQualitytexture', 'setExaggeration']),
 
     resetBearing(){
       this._map.easeTo({'bearing': 0})
+    },
+
+    tl3d(){
+    	this.tooltipshow = false
+    	this.toggleLaunch3D()
     },
 
     enterSoilMode(){
@@ -157,6 +176,16 @@ export default {
 
     toggleLngLat(e){
 
+    },
+
+    changeQuality(){
+    	var qualities = ['hd', 'ld', 'sd']
+    	var current = qualities.indexOf(this.qualityTexture)
+    	var next = qualities[current + 1]
+    	if(next == undefined){
+    		next = 'hd'
+    	}
+    	this.setQualitytexture(next)
     },
 
     remap(num, in_min, in_max, out_min, out_max) {
@@ -198,6 +227,13 @@ export default {
   font-size: 13px;
 }
 
+.quality{
+	border: 1px solid white;
+	border-radius: 4px;
+	text-transform: uppercase;
+	padding: 0 .5em;
+	font-size: 11px;
+}
 
 .tempInput{
   z-index: 99;
@@ -252,6 +288,7 @@ export default {
 .wide{
   // width: 
 }
+
 
 
 .narrow{

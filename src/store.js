@@ -33,9 +33,11 @@ const mappy = {
     soilMode: false,
     sketchfabLoaded: false,
     gridExtruded: false,
+    exaggeration: 0,
     sketchfabMode: false,
     dialog: false,
     blendmode: true,
+    qualityTexture: 'hd',
     sketchfab:{
       cameraOrigin: null,
       camera: null
@@ -46,6 +48,12 @@ const mappy = {
 
     setCurrentGridRef: function(state, int){
       state.currentGridRef = int
+    },
+    setExaggeration: function(state, num){
+      state.exaggeration = num
+    },
+    setQualitytexture: function(state, quality){
+      state.qualityTexture = quality
     },
     toggleDialog: function(state){
       state.dialog = !state.dialog
@@ -136,6 +144,8 @@ const mappy = {
   getters: {
     _map: state => state._map,
     dialog: state => state.dialog,
+    getExaggeration: state => state.exaggeration,
+    qualityTexture: state => state.qualityTexture,
     blendmode: state => state.blendmode,
     wineries: state => state.wineries,
     wineriesHere: state => state.wineriesHere,

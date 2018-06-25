@@ -12,7 +12,7 @@
       </v-container> -->
 
 
-      <mappy :style="{'pointer-events': sketchfabMode ? 'none': 'all'}" container="map" zoom="12" :LngLat="_mapOrigin.coords" mapStyle="mapbox://styles/edanweis/cjgvrsug4001v2rqhj2zja0nn" :token="credentials.mapbox.token"></mappy>
+      <mappy :style="{'pointer-events': sketchfabMode ? 'none': 'all'}" container="map" zoom="12" :LngLat="_mapOrigin.coords" mapStyle="mapbox://styles/edanweis/cjgx353bx002q2rqhgukgm8jm" :token="credentials.mapbox.token"></mappy>
 
       <div class="overlay"></div>
       <div :class="['overlay3d', {'sketchfabMode': sketchfabLoaded && sketchfabMode && gridExtruded ? true : false}]"></div>
@@ -80,7 +80,7 @@ export default {
   },
   watch:{
     sketchfabLoaded: function(val){
-      console.log('sk loaded?',val)
+      // console.log('sk loaded?',val)
     },
   },
   methods:{
