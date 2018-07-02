@@ -2,8 +2,10 @@
   <v-container fluid fill-height class="wrapper cursordefault">
     
     <div class="logo-wrapper" @click="toggleBlendmode()">
-      <img src="../assets/Adelaide Hills Avatar_white.svg" :class="['logo', {'clipped' : mini ? true : false}, 'noselect']" >
+      <img src="../assets/Adelaide Hills Avatar_white.svg" :class="['logo', {'clipped' : mini ? true : false}, 'noselect']" />
+      <div :class="['logo-subtitle', {'compact': mini ? true : false}]" style="">Adelaide Hills Wine Region</div>
     </div>
+
 
     <div :class="['overlay-grad', 'noevents']" :style="{'width': 'calc(100% - ' + miniWidth +'px)' }"></div>
     <div class="overlay-mapmini noevents" :style="{'mix-blend-mode' : blendmode ? 'normal':'exclusion', 'filter' : 'hue-rotate('+huerotate+'deg)'}"></div>
@@ -207,6 +209,47 @@ export default {
 }
 
 
+.logo-subtitle{
+	position: relative;
+	display: block;
+	font-family: 'CircularStdBook';
+	font-size: 1.2em;
+	text-align: center;
+	// font-weight: 600;
+	margin-top: 4vh;
+	top: 0px;
+	transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+
+.logo-subtitle.compact{
+	font-size: 0.8em;
+	text-align: left;
+	top: -60px;
+}
+
+@font-face {
+    font-family: 'CircularStdBold';
+    src: url('../assets/fonts/CircularStdBold.eot');
+    src: url('../assets/fonts/CircularStdBold.eot') format('embedded-opentype'),
+         url('../assets/fonts/CircularStdBold.woff2') format('woff2'),
+         url('../assets/fonts/CircularStdBold.woff') format('woff'),
+         url('../assets/fonts/CircularStdBold.ttf') format('truetype'),
+         url('../assets/fonts/CircularStdBold.svg#CircularStdBold') format('svg');
+}
+
+@font-face {
+    font-family: 'CircularStdBook';
+    src: url('../assets/fonts/CircularStdBook.eot');
+    src: url('../assets/fonts/CircularStdBook.eot') format('embedded-opentype'),
+         url('../assets/fonts/CircularStdBook.woff2') format('woff2'),
+         url('../assets/fonts/CircularStdBook.woff') format('woff'),
+         url('../assets/fonts/CircularStdBook.ttf') format('truetype'),
+         url('../assets/fonts/CircularStdBook.svg#CircularStdBook') format('svg');
+}
+
+
+
 .latlng{
   display: flex;
   color:white;
@@ -250,7 +293,8 @@ export default {
   width: 100%;
   height: 400px;
   display: flex;
-  align-items: flex-start;
+  flex-wrap: wrap;
+  align-items: normal;
   justify-content: center;
   padding: 60px 30px 0 30px;
   z-index: 2;
@@ -262,7 +306,7 @@ export default {
   margin: 0;
   width: 90%;
   min-width: 45px; 
-  max-width: 170px;
+  // max-width: 170px;
 }
 
 .logo.clipped{

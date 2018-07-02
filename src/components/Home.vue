@@ -18,8 +18,10 @@
       <div :class="['overlay3d', {'sketchfabMode': sketchfabLoaded && sketchfabMode && gridExtruded ? true : false}]"></div>
 
     <transition name='fade'>
-      <div class="please-wait noselect" :style="{'width': 'calc( 100vw - ' + menuWidth + 'px)'}" v-if="(!sketchfabLoaded && gridExtruded) && sketchfabMode">
-        Like a fine wine, <br/> sometimes you need to wait.
+      <div class="please-wait noselect softlight" v-if="(!sketchfabLoaded && gridExtruded) && sketchfabMode" :style="{'width': 'calc( 100vw - ' + menuWidth + 'px)'}" >
+        <img src="../assets/mountainglass.gif" class="mountainglass">
+        <img src="../assets/winebase_bl.png" class="winebase">
+        <p>Please wait</p>
       </div>
     </transition>
 
@@ -98,6 +100,18 @@ export default {
 <style>
 
 
+.mountainglass{
+	position: relative;
+	width: auto;
+	pointer-events: none;
+}
+
+
+.softlight{
+	mix-blend-mode: soft-light;
+	filter: brightness(1.5);
+
+}
 .slideUp-enter-active, .slideUp-leave-active {
   transition: all 245ms cubic-bezier(.64,.02,.14,.94);
 }
@@ -197,6 +211,8 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
+  flex-wrap: wrap;
+  flex-direction: column;
   font-family: Raleway;
   /*font-weight: 400;*/
   font-size: 24px;

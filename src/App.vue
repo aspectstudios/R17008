@@ -14,8 +14,8 @@
 
 
       <transition name="fadeIn">
-      <v-toolbar-side-icon v-if="mini" class="white--text menu-icon mapboxBG" @click.stop="mini = !mini"></v-toolbar-side-icon>
-      <v-btn icon @click.native.stop="mini =!mini" class="menu-icon mapboxBG" v-else>
+      <v-toolbar-side-icon v-if="mini" class="white--text menu-icon" @click.stop="mini = !mini"></v-toolbar-side-icon>
+      <v-btn icon @click.native.stop="mini =!mini" class="white--text menu-icon" v-else>
       <v-icon class="white--text">close</v-icon>
       </v-btn>
       </transition>
@@ -41,7 +41,7 @@
     <div v-if="sketchfabMode" class="slider-wrapper">
     <div class="slider-caption" >Vertical terrain exaggeration</div>
     <div class="slider">
-       <v-slider  color="white" v-show="true"  v-model="exaggeration" thumb-label prepend-icon="filter_hdr" ></v-slider>
+       <v-slider  color="white black--text" v-show="true"  v-model="exaggeration" thumb-label prepend-icon="filter_hdr" ></v-slider>
     </div>
     </div>
   </transition>
@@ -51,7 +51,8 @@
 
     
     <v-footer app style="z-index: 2 !important">
-      <img src="./assets/up_logo.svg" class="logo noevents cursordefault noselect"/><span class="white--text pl-2 noevents cursordefault noselect">terroir 2018</span>
+      <div class="footer-logo noevents noselect">terroir</div>
+      <img src="./assets/up_logo.svg" class="logo noevents cursordefault noselect"/><span class="white--text pl-2 noevents cursordefault noselect">2018</span>
 
       <transition name="fade-slide-up" appear>
       <span class="bestviewed allevents noselect" v-if="bestviewed">Best viewed in Chrome or Safari on a notebook or desktop computer.<v-btn icon @click="bestviewed = false" small><v-icon style="padding-left:10px;font-size:13px; pointer-events:all" class="allevents white--text">cancel</v-icon></v-btn> </span>
@@ -187,6 +188,7 @@ body, html {
 }
 
 .terroir-logo{
+  font-family: 'CircularStdBold';
   width: 100%
   padding: 60px;
 }
@@ -196,6 +198,27 @@ body, html {
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+
+@font-face {
+    font-family: 'CircularStdBold';
+    src: url('./assets/fonts/CircularStdBold.eot');
+    src: url('./assets/fonts/CircularStdBold.eot') format('embedded-opentype'),
+         url('./assets/fonts/CircularStdBold.woff2') format('woff2'),
+         url('./assets/fonts/CircularStdBold.woff') format('woff'),
+         url('./assets/fonts/CircularStdBold.ttf') format('truetype'),
+}
+
+
+.footer-logo{
+  font-family: 'CircularStdBold';
+  font-size: 5vw;
+  color: #153a29;  
+  position: absolute;
+  left: 10px;
+  top: -6vw;
+  opacity: 0.9;
   
 }
 
@@ -288,7 +311,7 @@ header span {
 
 .slider-wrapper{
   position: absolute;
-  top:51px;
+  top:6px;
   left: 35px;
 }
 
@@ -297,6 +320,7 @@ header span {
 }
 
 .slider{
+  zoom: 2;
   display: flex;
   flex-direction: column;
   align-items: center;
