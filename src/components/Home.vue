@@ -18,10 +18,9 @@
       <div :class="['overlay3d', {'sketchfabMode': sketchfabLoaded && sketchfabMode && gridExtruded ? true : false}]"></div>
 
     <transition name='fade'>
-      <div class="please-wait noselect softlight" v-if="(!sketchfabLoaded && gridExtruded) && sketchfabMode" :style="{'width': 'calc( 100vw - ' + menuWidth + 'px)'}" >
-        <img src="../assets/mountainglass.gif" class="mountainglass">
-        <img src="../assets/winebase_bl.png" class="winebase">
-        <p>Please wait</p>
+      <div v-if="(!sketchfabLoaded && gridExtruded) && sketchfabMode" class="please-wait noselect softlight"  :style="{'width': 'calc( 100vw - ' + menuWidth + 'px)'}" >
+        <img style="width: 110px" src="../assets/mountainglass.gif" class="mountainglass">
+        <img style="width: 110px" src="../assets/winebase_bl.png" class="winebase">
       </div>
     </transition>
 

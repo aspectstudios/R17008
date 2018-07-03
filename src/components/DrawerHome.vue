@@ -213,10 +213,11 @@ export default {
 	position: relative;
 	display: block;
 	font-family: 'CircularStdBook';
-	font-size: 1.2em;
+	font-size: 1.5em;
 	text-align: center;
 	// font-weight: 600;
-	margin-top: 4vh;
+	margin-top: 3vh;
+	width: 100%;
 	top: 0px;
 	transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
 }
@@ -225,7 +226,8 @@ export default {
 .logo-subtitle.compact{
 	font-size: 0.8em;
 	text-align: left;
-	top: -60px;
+	top: -50px;
+	left: -20px;
 }
 
 @font-face {
@@ -304,7 +306,7 @@ export default {
 .logo{
   position: relative;
   margin: 0;
-  width: 90%;
+  width: 45%;
   min-width: 45px; 
   // max-width: 170px;
 }

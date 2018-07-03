@@ -41,7 +41,7 @@
     <div v-if="sketchfabMode" class="slider-wrapper">
     <div class="slider-caption" >Vertical terrain exaggeration</div>
     <div class="slider">
-       <v-slider  color="white black--text" v-show="true"  v-model="exaggeration" thumb-label prepend-icon="filter_hdr" ></v-slider>
+       <v-slider  color="white" v-show="true"  v-model="exaggeration" prepend-icon="filter_hdr" ></v-slider>
     </div>
     </div>
   </transition>
@@ -54,12 +54,15 @@
       <div class="footer-logo noevents noselect">terroir</div>
       <img src="./assets/up_logo.svg" class="logo noevents cursordefault noselect"/><span class="white--text pl-2 noevents cursordefault noselect">2018</span>
 
-      <transition name="fade-slide-up" appear>
-      <span class="bestviewed allevents noselect" v-if="bestviewed">Best viewed in Chrome or Safari on a notebook or desktop computer.<v-btn icon @click="bestviewed = false" small><v-icon style="padding-left:10px;font-size:13px; pointer-events:all" class="allevents white--text">cancel</v-icon></v-btn> </span>
-    </transition>
+      
+
 
 
     </v-footer>
+    <v-snackbar v-model="snackbar" absolute style="z-index: 6 !important" bottom :timeout="0">
+      Best viewed in Chrome or Safari on a notebook or desktop computer.
+      <v-btn color="white" flat @click="snackbar = false" icon><v-icon>close</v-icon></v-btn>
+    </v-snackbar>
   </v-app>
 </template>
 
@@ -74,9 +77,9 @@ export default {
   name: 'app',
   data (){ 
     return {
+      snackbar: true,
       token: credentials.mapbox.token,
       mini: null,
-      bestviewed: true,
       exaggeration: 1
     }
   },
@@ -287,19 +290,6 @@ header span {
   top: 60px;
 }
 
-.bestviewed{
-  background-color: rgba(0,0,0,0.8);
-  color: white;
-  font-size: 11px;
-  margin: 0 1em;
-  padding: 0.1em 1em;
-  border-radius: 3px;
-  line-height: 1.2em;
-  display: flex-inline;
-  justify-content: center;
-  align-items: center;
-  
-}
 // .navigationDrawer::after{
 //   position: relative;
 //   width: 100px;
@@ -311,7 +301,7 @@ header span {
 
 .slider-wrapper{
   position: absolute;
-  top:6px;
+  top:33px;
   left: 35px;
 }
 
@@ -320,13 +310,13 @@ header span {
 }
 
 .slider{
-  zoom: 2;
+  transform: scale(1.2);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
   // position: absolute;
-  width: 150px;
+  width: 250px;
   height: auto;
   // top: 34px;
   z-index: 99 !important;
