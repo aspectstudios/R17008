@@ -22,9 +22,9 @@
     </v-toolbar>
 
     <v-content>
-      <v-alert v-if="staging" :style="{'pointer-events': 'all', 'z-index': '99 !important', 'top':'-7px', 'width':'calc( 100%  - '+this.menuwidth+'px )', 'right': this.menuWidth+'px', 'text-align': 'right' }" :value="true" type="warning" class="black--text" dismissible>
+      <!-- <v-alert v-if="staging" :style="{'pointer-events': 'all', 'z-index': '99 !important', 'top':'-7px', 'width':'calc( 100%  - '+this.menuwidth+'px )', 'right': this.menuWidth+'px', 'text-align': 'right' }" :value="true" type="warning" class="black--text" dismissible>
       Warning: You are on our testing website! - please visit <a href="https://ahwr-3d.surge.sh">ahwr-3d.surge.sh</a>
-    </v-alert>
+    </v-alert> -->
       <router-view></router-view>
       <v-dialog v-model="dialog" max-width="500px">
              <v-card>
@@ -61,6 +61,10 @@
     </v-footer>
     <v-snackbar v-model="snackbar" absolute style="z-index: 6 !important" bottom :timeout="0">
       Best viewed in Chrome or Safari on a notebook or desktop computer.
+      <v-btn color="white" flat @click="snackbar = false" icon><v-icon>close</v-icon></v-btn>
+    </v-snackbar>
+    <v-snackbar warning v-model="staging" absolute style="z-index: 6 !important" top :timeout="0">
+      Warning: You are on our testing website! - please visit <a href="https://ahwr-3d.surge.sh">ahwr-3d.surge.sh</a>
       <v-btn color="white" flat @click="snackbar = false" icon><v-icon>close</v-icon></v-btn>
     </v-snackbar>
   </v-app>
