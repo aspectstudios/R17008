@@ -63,7 +63,7 @@
       Best viewed in Chrome or Safari on a notebook or desktop computer.
       <v-btn color="white" flat @click="snackbar = false" icon><v-icon>close</v-icon></v-btn>
     </v-snackbar>
-    <v-snackbar error v-model="staging && snackbarstaging" absolute style="z-index: 99 !important" top :timeout="0">
+    <v-snackbar error v-model="staging" absolute style="z-index: 99 !important" top :timeout="0">
       Warning: You are on our testing website! - please visit <a href="https://ahwr-3d.surge.sh">&nbsp;ahwr-3d.surge.sh</a>
       <v-btn color="white" flat @click="snackbarstaging = false" icon><v-icon>close</v-icon></v-btn>
     </v-snackbar>
@@ -94,7 +94,12 @@ export default {
     staging: function(){
       var s = window.location.href.indexOf('staging') > -1 ? true : false
       console.log(s)
-      return s
+      if(s && this.snackbarstaging){
+        return true
+      } else{
+        return false
+      }
+      
     }
 
   },
