@@ -51,8 +51,8 @@
 
     
     <v-footer app style="z-index: 2 !important">
-      <div class="footer-logo noevents noselect">terroir</div>
-      <img src="./assets/up_logo.svg" class="logo noevents cursordefault noselect"/><span class="white--text pl-2 noevents cursordefault noselect">2018</span>
+      <!-- <div class="footer-logo noevents noselect">terroir</div> -->
+      <!-- <img src="./assets/up_logo.svg" class="logo noevents cursordefault noselect"/><span class="white--text pl-2 noevents cursordefault noselect">2018</span> -->
 
       
 

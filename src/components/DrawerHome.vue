@@ -15,9 +15,9 @@
 
       <!-- spacer -->
 
-      <div class="item">
-        <terrain-profile v-show="!mini"></terrain-profile>
-      </div>
+      <!-- <div class="item"> -->
+        <!-- <terrain-profile v-show="!mini"></terrain-profile> -->
+      <!-- </div> -->
 
       <div class="item" style="height: 20vh"></div>
       
@@ -25,15 +25,15 @@
           <!-- <v-text-field class="allevents gridRefInput" color="white" single-line v-model="gridRef" flat :rules="[rules.gridRef]"></v-text-field> -->
           <!-- </div> -->
 
-        <div class="item">
+<!--         <div class="item">
           <v-tooltip left>
           <v-btn :disabled="sketchfabMode" @click="resetBearing()" slot="activator" icon large :ripple="false" class="white--text menu-btn allevents">
             <v-icon :style="{'transform': 'rotate('+String(360-north)+'deg)'}">navigation</v-icon>
           </v-btn>
           <span>Reset North</span>
         </v-tooltip>
-        </div>
-
+        </div> -->
+<!-- 
       <div class="item">
         <v-tooltip left>
         <v-btn icon large slot="activator" :ripple="false" class="white--text menu-btn" @click="toggleLngLat()">
@@ -45,32 +45,28 @@
         </v-btn>
         <span>Current Grid #</span>
       </v-tooltip>
-      </div>
+      </div> -->
 
-      <div class="item">
+<!--       <div class="item">
         <v-tooltip left v-model="tooltipshow">  
         <v-btn v-if="!sketchfabMode" slot="activator" @click="currentGridRef ? tl3d() : null" icon large :ripple="false" :class="['white--text', 'menu-btn', 'allevents']">
           <span class="three-d"><img src="../assets/3d.svg" style="width: 55%; top: 2px; position: relative" ></span>
         </v-btn>
-      <!--   <span>See in 3D</span>
-      </v-tooltip>
-    </div>
-      <div class="item" v-else>
-        <v-tooltip left> -->
+
         <v-btn v-else icon large :ripple="false" slot="activator" :class="['white--text', 'menu-btn', 'noevents']">
            <v-progress-circular v-if="(!sketchfabLoaded || !gridExtruded) && sketchfabMode"indeterminate color="white" class="noevents"></v-progress-circular>
           <v-icon v-else-if="gridExtruded && sketchfabLoaded && sketchfabMode">done</v-icon>
         </v-btn>
         <span>3D Terrain mode</span>
       </v-tooltip>
-      </div>
+      </div> -->
 
-        <div class="item">
+<!--         <div class="item">
       <v-tooltip left>      
           <v-btn slot="activator" :disabled="sketchfabMode" @click="enterSoilMode()"  icon large class="white--text menu-btn allevents"><v-icon v-text="soilMode ? 'layers_clear' : 'layers'" ></v-icon></v-btn>
         <span v-text="soilMode ? 'Turn off soil layer' : 'Turn on soil layer'"></span>
       </v-tooltip>
-        </div>
+        </div> -->
 
 <!--         <div class="item">
       <v-tooltip left>      
@@ -86,13 +82,13 @@
       </v-tooltip>
       </div>
 
-      <div class="item" :style="{'height' : mini ? '60px' : '5px' }">
-        <div v-if="_map" class="latlng" :style="{'font-size': remap(menuWidth, 200, 500, 12, 14)+'px', 'left': mini ? '0' : miniWidth+'px', 'width': mini ? miniWidth+'px' : 'calc( 100% - '+miniWidth+'px)'}"><div>{{_map.getCenter().lat.toPrecision(mini ? 5 : 15)}}</div><div>{{_map.getCenter().lng.toPrecision(mini ? 5 : 15)}}</div></div>
+      <div class="item" :style="{'height' : mini ? '5px' : '5px' }">
+<!--         <div v-if="_map" class="latlng" :style="{'font-size': remap(menuWidth, 200, 500, 12, 14)+'px', 'left': mini ? '0' : miniWidth+'px', 'width': mini ? miniWidth+'px' : 'calc( 100% - '+miniWidth+'px)'}"><div>{{_map.getCenter().lat.toPrecision(mini ? 5 : 15)}}</div><div>{{_map.getCenter().lng.toPrecision(mini ? 5 : 15)}}</div></div> -->
       </div>
 
     </div>
     <transition name="fade">
-    <mappy-mini v-show="!mini" v-if="menuWidth && _map" container="minimap" :class="['minimap']" zoom="8" :LngLat="[138.7435885246556, -34.38845881895241]" mapStyle="mapbox://styles/edanweis/cjio5nk6p1tz32qpbtjdkd8xv" :token="credentials.mapbox.token"></mappy-mini> 
+<!--     <mappy-mini v-show="!mini" v-if="menuWidth && _map" container="minimap" :class="['minimap']" zoom="8" :LngLat="[138.7435885246556, -34.38845881895241]" mapStyle="mapbox://styles/edanweis/cjio5nk6p1tz32qpbtjdkd8xv" :token="credentials.mapbox.token"></mappy-mini>  -->
     </transition>
 
         <!-- <v-layout
