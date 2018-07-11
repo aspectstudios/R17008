@@ -47,19 +47,21 @@
       </v-tooltip>
       </div> -->
 
-<!--       <div class="item">
-        <v-tooltip left v-model="tooltipshow">  
-        <v-btn v-if="!sketchfabMode" slot="activator" @click="currentGridRef ? tl3d() : null" icon large :ripple="false" :class="['white--text', 'menu-btn', 'allevents']">
+      <div class="item">
+        <v-tooltip warning top v-model="tooltipshow">  
+        <v-btn v-if="!sketchfabMode" slot="activator" @click="currentRegion? tl3d() : null" icon large :ripple="false" :class="['white--text', 'menu-btn', 'allevents']">
           <span class="three-d"><img src="../assets/3d.svg" style="width: 55%; top: 2px; position: relative" ></span>
         </v-btn>
 
         <v-btn v-else icon large :ripple="false" slot="activator" :class="['white--text', 'menu-btn', 'noevents']">
-           <v-progress-circular v-if="(!sketchfabLoaded || !gridExtruded) && sketchfabMode"indeterminate color="white" class="noevents"></v-progress-circular>
-          <v-icon v-else-if="gridExtruded && sketchfabLoaded && sketchfabMode">done</v-icon>
+           <v-progress-circular v-if="(!sketchfabLoaded ) && sketchfabMode"indeterminate color="white" class="noevents"></v-progress-circular>
+          <v-icon v-else-if="sketchfabLoaded && sketchfabMode">done</v-icon>
         </v-btn>
-        <span>3D Terrain mode</span>
+        <span>View in 3D</span>
+        <div><i class="material-icons white--text" style="position:relative;left: 15px">arrow_downwards</i></div>
+        
       </v-tooltip>
-      </div> -->
+      </div>
 
 <!--         <div class="item">
       <v-tooltip left>      
@@ -145,10 +147,23 @@ export default {
 
     bearing: function(val){
       this.north = val
+    },
+    currentRegion: function(val){
+    	if(val != 'blank'){
+	    	if(!this.tooltip){
+	    		this.tooltipshow = true	
+				// var tm = setTimeout(() => {
+				// 	this.tooltipshow = false
+			 //    }, 2000);
+	    	}
+    	} else{
+    		this.tooltipshow = false
+    	}
+    	
     }
   },
   computed: {
-    ...Vuex.mapGetters(['mini', 'loading', 'currentGridRef', 'miniWidth', 'menuWidth', '_map', 'bearing', 'gridExtruded', 'sketchfabLoaded', 'sketchfabMode', 'soilMode', 'blendmode', 'qualityTexture', 'getExaggeration']),
+    ...Vuex.mapGetters(['mini', 'loading', 'currentGridRef', 'miniWidth', 'menuWidth', '_map', 'bearing', 'gridExtruded', 'sketchfabLoaded', 'sketchfabMode', 'soilMode', 'blendmode', 'qualityTexture', 'getExaggeration', 'currentRegion']),
 
     qualityString: function(){
     	var s = {ld: 'low', sd: 'med', hd: 'high'}
@@ -157,15 +172,16 @@ export default {
   },
 
   methods: {
-    ...Vuex.mapMutations(['toggleLaunch3D', 'setSoilMode', 'toggleDialog', 'toggleBlendmode','setQualitytexture', 'setExaggeration']),
+    ...Vuex.mapMutations(['toggleLaunch3D', 'setSoilMode', 'toggleDialog', 'toggleBlendmode','setQualitytexture', 'setExaggeration', 'setSketchfabMode']),
 
     resetBearing(){
       this._map.easeTo({'bearing': 0})
     },
 
     tl3d(){
+    	this.setSketchfabMode(true)
     	this.tooltipshow = false
-    	this.toggleLaunch3D()
+    	this.toggleLaunch3D(true)
     },
 
     enterSoilMode(){

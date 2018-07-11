@@ -17,6 +17,7 @@
     "axios": "^0.18.0",
     "firebase": "^4.13.1",
     "gl-matrix": "^2.6.1",
+    "image-map-resizer": "^1.0.7",
     "lodash": "^4.17.5",
     "mapbox-gl-vue": "^1.7.0",
     "stylus": "^0.54.5",
@@ -26,9 +27,11 @@
     "vue-axios": "^2.1.0",
     "vue-chartkick": "^0.3.1",
     "vue-router": "^3.0.1",
+    "vue-scroll": "^2.1.7",
     "vue-touch": "^2.0.0-beta.4",
     "vuetify": "^1.0.11",
-    "vuex": "^3.0.1"
+    "vuex": "^3.0.1",
+    "withinviewport": "^2.0.0"
   },
   "devDependencies": {
     "autoprefixer": "^7.1.5",

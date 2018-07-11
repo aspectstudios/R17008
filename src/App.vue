@@ -37,14 +37,14 @@
            </v-dialog>
     
       <!-- <v-tooltip left> -->
-    <transition name="fade-slide-left">
+    <!-- <transition name="fade-slide-left">
     <div v-if="sketchfabMode" class="slider-wrapper">
     <div class="slider-caption" >Vertical terrain exaggeration</div>
     <div class="slider">
        <v-slider  color="white" v-show="true"  v-model="exaggeration" prepend-icon="filter_hdr" ></v-slider>
     </div>
     </div>
-  </transition>
+  </transition> -->
       <!-- </v-tooltip> -->
 
     </v-content>
@@ -81,7 +81,7 @@ export default {
   name: 'app',
   data (){ 
     return {
-      snackbar: true,
+      snackbar: false,
       snackbarstaging: true,
       token: credentials.mapbox.token,
       mini: null,

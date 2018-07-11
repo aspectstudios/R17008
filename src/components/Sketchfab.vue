@@ -57,6 +57,7 @@ export default {
   mounted(){
 
     // init viewer for the first time.
+    console.log('initating viewer with ID: ', this.urlid)
     this.initViewer(this.urlid)
 
 

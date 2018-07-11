@@ -26,6 +26,7 @@ const mappy = {
     miniWidth: 61,
     menuWidth: null,
     currentGridRef: null,
+    currentRegion: 'lenswood',
     features: [],
     offsetCenterLngLat: null,
     offsetCenterPx: null,
@@ -48,6 +49,10 @@ const mappy = {
 
     setCurrentGridRef: function(state, int){
       state.currentGridRef = int
+    },
+    setCurrentRegion: function(state, region){
+      // console.log('setting region', region)
+      state.currentRegion = region
     },
     setExaggeration: function(state, num){
       state.exaggeration = num
@@ -125,6 +130,7 @@ const mappy = {
       state.wineriesHere = arr
     },
     toggleLaunch3D: function(state, bool){
+      console.log('toggling?...', bool)
       if(bool == true){
           state.launch3D = true 
           return
@@ -150,6 +156,7 @@ const mappy = {
     wineries: state => state.wineries,
     wineriesHere: state => state.wineriesHere,
     currentGridRef: state => state.currentGridRef,
+    currentRegion: state => state.currentRegion,
     loading: state => state.loading,
     mini: state => state.mini,
     _mapmini: state => state._mapmini,
