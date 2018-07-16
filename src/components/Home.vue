@@ -55,7 +55,6 @@ import Vuex from 'vuex'
 import Sketchfab from './Sketchfab'
 import BottomSheet from './BottomSheet'
 import DivPanner from './DivPanner'
-import ImagePanner from './ImagePanner'
 // import {reginons} from '../assets/sketchfab-regions-db.js'
 var sketchfabDB = require('../assets/sketchfab-regions-db.js').default.regions
 
@@ -67,7 +66,7 @@ export default {
     BottomSheet,
     // Viewer, 
     DivPanner,
-    ImagePanner
+    
   },
   data () {
     return {

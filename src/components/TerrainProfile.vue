@@ -8,7 +8,6 @@
 
 <script>
 import Vuex from 'vuex'
-import anime from 'animejs'
 const _ = require('lodash')
 
 export default {

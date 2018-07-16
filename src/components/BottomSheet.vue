@@ -1,5 +1,5 @@
 <template>
-	<transition-group name="fade" v-dragscroll :class="['wrapper', {'hidden' : hide ? true : false}]" :style="{'width': 'calc( 100vw - '+(this.menuWidth || this.miniWidth)+'px)'}">
+	<transition-group name="fade" :class="['wrapper', {'hidden' : hide ? true : false}]" :style="{'width': 'calc( 100vw - '+(this.menuWidth || this.miniWidth)+'px)'}">
 			<div id="info-container" class="information winery noselect" :style="{'width': remap($vuetify.breakpoint.width, 300, 1920, 600, 900)+'px', 'zoom': remap($vuetify.breakpoint.width, 300, 1920, 0.6, 0.8), 'opacity' : hide ? 0 : 1 }" v-for="(winery, key, index) in wineriesHere" :key="key">
 				<div class="winery-container">
 					<div class="winery-name">{{ winery.properties.name }}<span class="winery-region">{{ winery.properties.region }}</span></div>
@@ -19,15 +19,11 @@
 <script>
 import Vuex from 'vuex'
 import _ from 'lodash'
-import { dragscroll } from 'vue-dragscroll'
 
 export default {
 
   name: 'bottomSheet',
   props: [''],
-  directives: {
-     'dragscroll': dragscroll
-   },
   components: {},
   data () {
     return {
