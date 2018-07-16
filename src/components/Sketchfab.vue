@@ -27,7 +27,7 @@
 import Vuex from 'vuex'
 var sketchfab = require('../sketchfab-viewer-1.2.1.js')
 
-import {mat4} from 'gl-matrix'
+
 
 export default {
 
@@ -94,15 +94,7 @@ export default {
 
     getExaggeration: function(val){
       var self = this
-      this._api.getMatrix( 406, function( err, matrices ) {
-            if(!err){
-              var scaledMatrix = mat4.create();
-              console.log('matrices', matrices)
-              // var scale = Number(leftValue);
-              mat4.fromScaling(scaledMatrix, [1,Math.max(0.1,val*0.02), 1]);
-              self._api.setMatrix( 406, scaledMatrix );
-            }
-      });
+      
 
     },
 
