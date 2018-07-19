@@ -62,9 +62,9 @@ Compatibility tests
     <tr>
         <td>iPhone 6</td>
         <td>9.0 / 11.4</td>
-        <td>9</td>
-        <td>Works 100%</td>
-        <td>Works 100%</td>
+        <td>11</td>
+        <td>Minor CSS style incompatibilities.&nbsp;</td>
+        <td>Minor CSS style incompatibilities.&nbsp;</td>
         <td></td>
         <td></td>
     </tr>
