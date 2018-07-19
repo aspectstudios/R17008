@@ -6,65 +6,91 @@ Compatibility tests
 ---
 <table>
     <tr>
-        <td>Device</td>
-        <td>OS Version</td>
-        <td>Chrome</td>
-        <td>Safari</td>
-        <td>Firefox</td>
-        <td>Safari console</td>
+        <th>Device</th>
+        <th>Original / Updated OS Version</th>
+        <th>Tested OS</th>
+        <th>Chrome status</th>
+        <th>Safari Status</th>
+        <th></th>
+        <th></th>
     </tr>
     <tr>
-        <td>iPad Pro</td>
-        <td>11</td>
-        <td>Unstable - sometimes works</td>
-        <td>Unstable - sometimes works</td>
+        <td>iPad 4</td>
+        <td>6.0 / 10.3.3</td>
+        <td>7</td>
+        <td>Significant CSS style incompatibilities</td>
+        <td>Significant CSS style incompatibilities</td>
         <td></td>
         <td></td>
     </tr>
     <tr>
         <td>iPad Air 2</td>
+        <td>8.1 / 11.3</td>
         <td>8</td>
-        <td>NO - Always failing</td>
-        <td>?</td>
+        <td>Can't Test</td>
+        <td>Significant CSS style incompatibilities</td>
         <td></td>
         <td></td>
     </tr>
     <tr>
         <td>iPad Mini 3</td>
+        <td>8.1 / 11.2.6</td>
         <td>8</td>
-        <td>?</td>
-        <td>?</td>
+        <td>Minor CSS style incompatibilities. Model won't load.</td>
+        <td>Significant CSS style incompatibilities</td>
         <td></td>
         <td></td>
     </tr>
     <tr>
-        <td>iPad 4</td>
-        <td>7</td>
-        <td>NO - Always failing</td>
-        <td>NO - Always failing</td>
+        <td>iPad Pro</td>
+        <td>9.1 / 11.2.6</td>
+        <td>11</td>
+        <td>Works 100%</td>
+        <td>Works 100%</td>
         <td></td>
-        <td>`ReferenceError: Can't find variable: WeakMap`</td>
+        <td></td>
     </tr>
     <tr>
         <td>iPad 5</td>
+        <td>10.3 / 11.3</td>
         <td>11</td>
-        <td>No - Always failing</td>
+        <td>Works 100%</td>
+        <td>Works 100%</td>
         <td></td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>iPhone 6</td>
+        <td>9.0 / 11.4</td>
+        <td>9</td>
+        <td>Works 100%</td>
+        <td>Works 100%</td>
+        <td></td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>iPhone X</td>
+        <td>11.0.1 / 11.4</td>
+        <td>11</td>
+        <td>Works 100%</td>
+        <td>Works 100%</td>
         <td></td>
         <td></td>
     </tr>
     <tr>
         <td>mac</td>
         <td>OS Sierra</td>
-        <td>YES - Always works</td>
-        <td>YES - Always works</td>
-        <td>NO - Always failing</td>
+        <td>OS Sierra</td>
+        <td>Works 100%</td>
+        <td>Works 100%</td>
+        <td></td>
         <td></td>
     </tr>
     <tr>
         <td>Samsung S9</td>
         <td>6</td>
-        <td>YES - Always works</td>
+        <td></td>
+        <td></td>
         <td></td>
         <td></td>
         <td></td>
@@ -72,23 +98,8 @@ Compatibility tests
     <tr>
         <td>Samsung Galaxy Note 4</td>
         <td>4.4</td>
-        <td>YES - Always works</td>
         <td></td>
         <td></td>
-        <td></td>
-    </tr>
-    <tr>
-        <td>iPhone 6</td>
-        <td></td>
-        <td>YES - Always works</td>
-        <td></td>
-        <td></td>
-        <td></td>
-    </tr>
-    <tr>
-        <td>iPhone X</td>
-        <td></td>
-        <td>YES - Always works</td>
         <td></td>
         <td></td>
         <td></td>

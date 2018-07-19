@@ -18,8 +18,8 @@
     v-bind:pan-options="{ direction: 'all', pointers: 0}"
     
     :style="style">
-    <img :src="'../static/overlays/'+overlay+'.gif'" class="hover-overlay" :style="{opacity: opacity}">
     <img class="image" src="../assets/static_map.gif" @click="disabled ? null : backgroundClick()"  alt=""  ref="image" key="1"  :usemap="disabled ? '' : '#map'" />
+    <img v-for="i in images" :src="'../static/overlays/cropped/'+i.name+'.gif'" class="region" :style="{left: i.x+'px', top: i.y+'px', opacity: ((currentRegion == i.name) || (currentRegion == 'blank')) ? 1 : 0.4}"/>
     
    <map name="map">
     <area shape="poly" @click="clickHandler('kuitpo')" coords="1252, 2755, 1386, 2822, 1409, 2805, 1412, 2768, 1432, 2762, 1439, 2787, 1504, 2801, 1512, 2842, 1498, 2881, 1467, 2891, 1468, 2951, 1487, 2973, 1435, 3145, 1165, 3392, 1120, 3408, 1029, 3367, 985, 3310, 994, 3232, 1094, 3092, 1180, 2915, 1209, 2920, 1222, 2900, 1207, 2880, 1225, 2852, 1245, 2864" />
@@ -41,7 +41,7 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import vuescroll from 'vue-scroll'
-Vue.use(vuescroll)
+Vue.use(vuescroll, {throttle: 600})
 var VueTouch = require('vue-touch')
 VueTouch.registerCustomEvent('doubletap', {
   type: 'tap',
@@ -59,7 +59,19 @@ export default {
   components: {},
   data () {
     return {
-      overlay: 'blank',
+      images: [
+	  	{name: 'kuitpo', x: 415, y:1149 },
+	  	{name: 'macclesfield', x: 613, y:1168 },
+	  	{name: 'bugle', x:580 , y:1072 },
+	  	{name: 'nairne', x: 679, y:983 },
+	  	{name: 'longwood', x: 460, y:951 },
+	  	{name: 'piccadilly', x:543 , y:900 },
+	  	{name: 'basket', x:554 , y:843 },
+	  	{name: 'lenswood', x:623 , y:842 },
+	  	{name: 'onkaparinga', x:447 , y:824 },
+	  	{name: 'northern', x: 587, y:595 }
+	  	],
+	  selected: null,
       inBoundsTop: true,
       inBoundsLeft: true,
       inBoundsBottom: true,
@@ -77,7 +89,7 @@ export default {
       maxScale:5,
       minScale:1,
       oldScale: 1,
-      opacity: 0,
+      opacity: 1,
       originScale: null
     }
   },
@@ -85,7 +97,7 @@ export default {
   	imageMapResize()
   },
   computed:{
-  	...Vuex.mapGetters(['menuWidth']),
+  	...Vuex.mapGetters(['menuWidth', 'currentRegion']),
 
     style: function(val){
       return {transform: 'translate('+ this.x +'px, '+this.y+'px) scale('+ this.scale +')', 'transform-origin': 'center center'}
@@ -93,39 +105,26 @@ export default {
   },
   watch:{
 
-  	style: function(val){
-  		var self = this
-  		this.inBoundsTop = withinviewport(self.$refs.image, {sides: 'top'})
-  		this.inBoundsLeft = withinviewport(self.$refs.image, {sides: 'left'})
-  		this.inBoundsBottom = withinviewport(self.$refs.image, {sides: 'bottom'})
-  		this.inBoundsRight = withinviewport(self.$refs.image, {sides: 'right', right: this.menuWidth})
-  	},
-  	overlay: function(newVal, oldVal){
-  		if(newVal != oldVal){
-  			if (newVal !== 'blank'){
-  				this.opacity = 0.7	
-  			} else{
-  				this.opacity = 0
-  			} 		
-  		}
-  	}
+	style: function(val){
+		var self = this
+		this.inBoundsTop = withinviewport(self.$refs.image, {sides: 'top'})
+		this.inBoundsLeft = withinviewport(self.$refs.image, {sides: 'left'})
+		this.inBoundsBottom = withinviewport(self.$refs.image, {sides: 'bottom'})
+		this.inBoundsRight = withinviewport(self.$refs.image, {sides: 'right', right: this.menuWidth})
+	},
 
   },
   methods:{
   	...Vuex.mapMutations(['setCurrentRegion']),
 
   backgroundClick(){
-  	this.overlay = 'blank'
-  	this.opacity = 0
+  	this.setCurrentRegion('blank')
   },
 
   handleScroll(e){
   	console.log(e)
   },	
-  setOverlay(region){
-  	this.overlay = region
-  },
-
+  
   setXY(){
     this.x = this.offsetX
     this.y = this.offsetY
@@ -209,7 +208,6 @@ export default {
 
   clickHandler(name){
   	this.setCurrentRegion(name)
-  	this.setOverlay(name)
   }
 
   },
@@ -234,22 +232,16 @@ export default {
 }
 .image{
 	pointer-events: all;
-	/*transform: scale(1);*/
-	/*transform-origin: top left;*/
 	width: 1920px;
-
-	/*height: 100vh;*/
 }
 
-.hover-overlay{
+.region{
 	transition: opacity 245ms ease-out;
 	position: absolute;
-	left: 348px;
-	top: 596px;
-	width: 588px;
-	height: auto;
-	display: block;
-	opacity: 0;
+	/*width: 1920px;*/
+	transform: scale(0.41939);
+	opacity: 1;
+	transform-origin: top left;
 
 
 }

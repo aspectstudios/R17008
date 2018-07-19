@@ -105,56 +105,28 @@
 </template>
 
 <script>
-import credentials from '../credentials';
-import Mappy from './Mappy';
-import MappyMini from './MappyMini';
-import TerrainProfile from './TerrainProfile';
 import Vuex from 'vuex'
-
 export default {
   name: 'home',
-  components: {
-    Mappy,
-    MappyMini,
-    TerrainProfile
-  },
   data () {
     return {
-      credentials,
       tooltipshow: false,
-      dialog: false,
       huerotate: 0,
-      north: null,
-      gridRef: null,
-      rules: {
-               gridRef: (value) => {
-                 const pattern = /\d\d\d/
-                 return pattern.test(value) || 'Invalid grid reference.'
-               }
-             },
       items: [
-        // {icon: 'layers', tooltip: 'hide/show layers'},
         {icon: 'help', tooltip: 'About', click: ''}
       ]
     }
   },
-  mounted(){
-  },
   watch: {
-    gridRef: function(val){
-
-    },
-
-    bearing: function(val){
-      this.north = val
-    },
     currentRegion: function(val){
     	if(val != 'blank'){
 	    	if(!this.tooltip){
-	    		this.tooltipshow = true	
-				// var tm = setTimeout(() => {
-				// 	this.tooltipshow = false
-			 //    }, 2000);
+	    		if(!this.tooltip){
+	    			this.tooltipshow = true	
+					var tm = setTimeout(() => {
+						this.tooltipshow = false
+				    }, 2000);
+	    		} 
 	    	}
     	} else{
     		this.tooltipshow = false
@@ -163,7 +135,7 @@ export default {
     }
   },
   computed: {
-    ...Vuex.mapGetters(['mini', 'loading', 'currentGridRef', 'miniWidth', 'menuWidth', '_map', 'bearing', 'gridExtruded', 'sketchfabLoaded', 'sketchfabMode', 'soilMode', 'blendmode', 'qualityTexture', 'getExaggeration', 'currentRegion']),
+    ...Vuex.mapGetters(['loading', 'miniWidth', 'menuWidth', 'sketchfabLoaded', 'sketchfabMode', 'soilMode', 'blendmode', 'qualityTexture', 'getExaggeration', 'currentRegion', 'mini']),
 
     qualityString: function(){
     	var s = {ld: 'low', sd: 'med', hd: 'high'}
@@ -174,10 +146,6 @@ export default {
   methods: {
     ...Vuex.mapMutations(['toggleLaunch3D', 'setSoilMode', 'toggleDialog', 'toggleBlendmode','setQualitytexture', 'setExaggeration', 'setSketchfabMode']),
 
-    resetBearing(){
-      this._map.easeTo({'bearing': 0})
-    },
-
     tl3d(){
     	this.setSketchfabMode(true)
     	this.tooltipshow = false
@@ -186,10 +154,6 @@ export default {
 
     enterSoilMode(){
       this.setSoilMode(!this.soilMode)
-    },
-
-    toggleLngLat(e){
-
     },
 
     changeQuality(){

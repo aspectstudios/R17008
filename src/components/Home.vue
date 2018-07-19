@@ -1,122 +1,49 @@
 <template>
   <div class="wrapper">
-  <!-- <v-container fluid fill-height>
-        <v-layout
-          justify-center
-          align-center
-        >
-          <v-flex text-xs-center>
-            <mappy container="map" zoom="9" :LngLat="[138.829631 ,-34.964802]" mapStyle="mapbox://styles/edanweis/cjfacythk27812rqksxeixj87" :token="credentials.mapbox.token"></mappy> 
-          </v-flex>
-        </v-layout>
-      </v-container> -->
-
-      <!-- <mappy :style="{'pointer-events': sketchfabMode ? 'none': 'all'}" container="map" zoom="12" :LngLat="_mapOrigin.coords" mapStyle="mapbox://styles/edanweis/cjgx353bx002q2rqhgukgm8jm" :token="credentials.mapbox.token"></mappy> -->
       <div-panner :disabled="sketchfabMode ? true : false" ></div-panner>
-
-      <!-- <div class="overlay"></div> -->
       <div :class="['overlay3d', {'sketchfabMode': sketchfabLoaded && sketchfabMode ? true : false}]"></div>      
-
-
     <transition name='fade'>
-      <div v-if="(!sketchfabLoaded && gridExtruded) && sketchfabMode" class="please-wait noselect softlight"  :style="{'width': 'calc( 100vw - ' + menuWidth + 'px)'}" >
-        <img style="width: 110px" src="../assets/mountainglass.gif" class="mountainglass">
-        <img style="width: 110px" src="../assets/winebase_bl.png" class="winebase">
+      <div v-if="(!sketchfabLoaded) && sketchfabMode" class="please-wait noselect softlight"  :style="{'width': 'calc( 100vw - ' + menuWidth + 'px)'}" >
+        <!-- <img style="width: 110px" src="../assets/mountainglass.gif" class="mountainglass"> -->
+        <!-- <img style="width: 110px" src="../assets/winebase_bl.png" class="winebase"/> -->
+        <v-progress-circular indeterminate color="white" class="noevents"></v-progress-circular>
+        
       </div>
     </transition>
 
       <sketchfab :style="{'opacity': sketchfabLoaded && sketchfabMode ? 1 : 0, 'transition-delay':  sketchfabLoaded && sketchfabMode ? 0 : 2000}" v-if="currentRegion && sketchfabMode" v-show="sketchfabLoaded"  class="sketchfab-wrapper" :urlid="sketchfabDB[currentRegion]" autospin='0' autostart='1' preload='1' ui_controls='0' ui_infos='0' ui_related='0' transparent='1' scrolling="no"></sketchfab>
 
-      <transition name="slideUp">
-      <bottom-sheet class="bottomsheet" v-if="wineriesHere && !sketchfabMode && !soilMode"></bottom-sheet>
-      </transition>
+     <div class="map-overlay" v-if="!blendmode"></div>
 
-      <div class="map-overlay" v-if="!blendmode"></div>
-
-      <!-- <div class="debug"><pre>{{debug}}</pre></div> -->
-      <!-- <northstar></northstar> -->
-
-
-      <!-- <div v-if="_mapCenter" class="mapCenter" :style="{'top': projectedCenter.y+'px', 'left': projectedCenter.x+'px'}"></div> -->
-      <!-- <div v-if="_mapCenter" class="mapCenter" :style="{'top': projectedCenter.y+'px', 'left': projectedCenter.x+'px'}"></div> -->
-      <!-- <div class="debug"><pre>{{debug}}</pre></div> -->
       </div>
 </template>
 
 <script>
 import Vue from 'vue'
-// import 'viewerjs/dist/viewer.css'
-// import Viewer from 'v-viewer'
-// import Viewer from "v-viewer/src/component.vue"
-// Vue.use(Viewer)
-import credentials from '../credentials';
-import Mappy from './Mappy';
 import Vuex from 'vuex'
 import Sketchfab from './Sketchfab'
-import BottomSheet from './BottomSheet'
 import DivPanner from './DivPanner'
-// import {reginons} from '../assets/sketchfab-regions-db.js'
 var sketchfabDB = require('../assets/sketchfab-regions-db.js').default.regions
 
 export default {
   name: 'home',
   components: {
-    Mappy,
     Sketchfab,
-    BottomSheet,
-    // Viewer, 
     DivPanner,
     
   },
   data () {
     return {
-    	urlid: null,
-    	viewer: false,
-    	imageData: null,
-	    viewerOptions: {
-		    inline: true,
-		    minZoomRatio: 1,
-		    initialViewIndex: 1,
-		    button: false,
-		    navbar: false,
-		    title: false,
-		    toolbar: false,
-		    tooltip: false,
-		    movable: true,
-		    zoomable: true,
-		    rotatable: true,
-		    scalable: true,
-		    transition: false,
-		    fullscreen: false,
-		    keyboard: false,
-		    url: "data-source"
-	},
+	  urlid: null,
    	  sketchfabDB,
-      credentials,
       camera: null
     }
   },
   computed: {
-    ...Vuex.mapGetters(['mini', '_mapCenter', '_map', 'debug', 'sketchfab', 'menuWidth', 'sketchfabLoaded', '_mapOrigin', 'currentRegion', 'sketchfabMode', 'gridExtruded', 'wineriesHere', 'soilMode', 'blendmode', 'launch3D']),
+    ...Vuex.mapGetters(['mini','currentRegion', 'sketchfab', 'menuWidth', 'sketchfabLoaded', 'sketchfabMode','soilMode', 'blendmode', 'launch3D']),
 
-    projectedCenter: function(){
-       return this._map.project(this._mapCenter)
-    },
-
-  },
-  mounted(){
-  	// this.$refs.viewer.$viewer.show() //$el.querySelector('.images').$viewer
-  	// viewer.show()
-    // this.setSketchfabLoaded(false)
-    // this.viewer = this.$el.querySelector('.images').$viewer
-
-    // console.log('viewer: ', this.$refs.viewer.	)
   },
   watch:{
-    sketchfabLoaded: function(val){
-      // console.log('sk loaded?',val)
-    },
-
     launch3D: function(val){
     	if(val){
     		this.setSketchfabMode(true)
@@ -131,7 +58,6 @@ export default {
 }
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style>
 
 
@@ -142,14 +68,7 @@ export default {
 }
 
 .static-image{
-	/*position: relative;*/
-	/*margin: 0 auto;*/
-    /*margin: auto;*/
-    /*height: 100vh;*/
-    /*top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;*/
+
     position: absolute;
     top: 50%;
     left: 50%;
@@ -239,6 +158,8 @@ export default {
 .sketchfab-wrapper{
   transition: opacity 500ms ease-in-out;
   /*transition-delay: 1500ms;*/
+
+  z-index: 2;
 
 }
 

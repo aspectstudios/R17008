@@ -5,12 +5,17 @@
       <!-- <div class="close-button"><v-icon>close</v-icon></div> -->
     </v-navigation-drawer>
     
-    <v-toolbar fixed app dense flat absolute style="z-index: 99 !important" class="transparent">
+    <v-toolbar fixed app dense flat style="z-index: 99 !important" class="transparent">
       <v-spacer></v-spacer>
       <v-tooltip left>
+        
         <v-btn v-show="sketchfabMode" slot="activator" class="elevation-0 close-button" fab outline small color="white white--text" @click="buttonHandler()"><v-icon>arrow_forward</v-icon></v-btn>
         <span>Back to 2D Map</span>
       </v-tooltip>
+
+      <!-- <v-btn icon @click="mini =!mini" class="white--text menu-icon">
+      <v-icon class="white--text" v-text="mini ? 'menu' : 'close'"></v-icon>
+      </v-btn> -->
 
 
       <transition name="fadeIn">
@@ -18,7 +23,7 @@
       <v-btn icon @click.native.stop="mini =!mini" class="white--text menu-icon" v-else>
       <v-icon class="white--text">close</v-icon>
       </v-btn>
-      </transition>
+      </transition> 
     </v-toolbar>
 
     <v-content>
@@ -35,28 +40,9 @@
                </v-card-text>
              </v-card>
            </v-dialog>
-    
-      <!-- <v-tooltip left> -->
-    <!-- <transition name="fade-slide-left">
-    <div v-if="sketchfabMode" class="slider-wrapper">
-    <div class="slider-caption" >Vertical terrain exaggeration</div>
-    <div class="slider">
-       <v-slider  color="white" v-show="true"  v-model="exaggeration" prepend-icon="filter_hdr" ></v-slider>
-    </div>
-    </div>
-  </transition> -->
-      <!-- </v-tooltip> -->
-
     </v-content>
-
     
-    <v-footer app style="z-index: 2 !important">
-      <!-- <div class="footer-logo noevents noselect">terroir</div> -->
-      <!-- <img src="./assets/up_logo.svg" class="logo noevents cursordefault noselect"/><span class="white--text pl-2 noevents cursordefault noselect">2018</span> -->
-
-      
-
-
+    <v-footer app style="z-index: 2 !important" class="noevents">
 
     </v-footer>
     <v-snackbar v-model="snackbar" absolute style="z-index: 6 !important" bottom :timeout="0">
@@ -70,26 +56,20 @@
   </v-app>
 </template>
 
-<script>
-import _ from 'lodash'
+<script>  
 import Vuex from 'vuex'
-import {db} from './firebase-db.js'
-const credentials = require('./credentials.js')
-
-
 export default {
   name: 'app',
   data (){ 
     return {
       snackbar: false,
       snackbarstaging: true,
-      token: credentials.mapbox.token,
-      mini: null,
+      mini: null, 
       exaggeration: 1
     }
   },
   computed:{
-    ...Vuex.mapGetters(['miniWidth', 'menuWidth', 'sketchfabMode', 'wineries', '_map', '_mapmini', 'dialog', 'getExaggeration']),
+    ...Vuex.mapGetters(['miniWidth', 'menuWidth', 'sketchfabMode', 'dialog', 'getExaggeration']),
 
     staging: function(){
       var s = window.location.href.indexOf('staging') > -1 ? true : false
@@ -106,21 +86,11 @@ export default {
   created(){
     var self = this
     this.setMenuWidth(this.getMenuWidth())
-
-    var data = db.ref('data')
-    this.$store.dispatch('setDataRef', data )
-    .then(response => {
-      console.log(this.wineries)
-    })
-
-
-    // console.log('set menuwidth:', this.menuWidth)
   },
   watch: {
     mini: function(val){
       this.setMini(val)
       this.setMenuWidth(this.getMenuWidth())
-      // console.log('set menuwidth:', this.menuWidth)
     },
 
     exaggeration: function(val){
@@ -150,33 +120,34 @@ export default {
       return (num - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
     },
     // resizeHandler(){
-    resizeHandler: _.debounce(function(){
-      setTimeout(function () {
-        this.setMenuWidth(this.getMenuWidth())
-        this.setMapWidth(this.$vuetify.breakpoint.width - this.getMenuWidth())
-      }.bind(this), 300)
-      setTimeout(function () {
-        if(this._map && this._mapmini){
-          this._map.resize()
-          this._mapmini.resize()
-        }
-      }.bind(this), 1000)
+    resizeHandler(){
+      
+      // setTimeout(function () {
+      //   this.setMenuWidth(this.getMenuWidth())
+      //   this.setMapWidth(this.$vuetify.breakpoint.width - this.getMenuWidth())
+      // }.bind(this), 300)
+      // setTimeout(function () {
+      //   if(this._map && this._mapmini){
+      //     this._map.resize()
+      //     this._mapmini.resize()
+      //   }
+      // }.bind(this), 1000)
 
 
       var bp = this.$vuetify.breakpoint.name
       // console.log(this.$vuetify.breakpoint)
       if(bp =='xs'){
-        this.mini = false;
+        // this.mini = false;
       } else if(bp =='sm'){
-        this.mini = false;
+        // this.mini = false;
       } else if(bp =='md'){
-        this.mini = false;
+        // this.mini = false;
       } else if(bp =='lg'){
-        this.mini = false;
+        // this.mini = false;
       } else if(bp =='xl'){
-        this.mini = false;
+        // this.mini = false;
       }
-    }, 100),
+    }
   // }
 
   }
@@ -236,7 +207,7 @@ body, html {
 }
 
 .menu-icon{
-  position: absolute;
+  position: absolute !important;
   right: 0px;
   top: 0px;
   margin-right: 12px !important;
@@ -283,7 +254,7 @@ header span {
 }
 
 
-.footer{
+.v-footer{
   background: transparent !important;
 }
 .logo{
