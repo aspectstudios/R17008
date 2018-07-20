@@ -120,7 +120,7 @@ export default {
 
   },
   methods:{
-  	...Vuex.mapMutations(['setCurrentRegion']),
+  	...Vuex.mapMutations(['setCurrentRegion', 'setSoilMode']),
 
   backgroundClick(){
   	this.setCurrentRegion('blank')
@@ -212,6 +212,7 @@ export default {
   },
 
   clickHandler(name){
+  	this.setSoilMode(false)
   	this.setCurrentRegion(name)
   }
 

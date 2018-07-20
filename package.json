@@ -19,6 +19,7 @@
     "stylus-loader": "^3.0.2",
     "v-viewer": "^1.0.1",
     "vue": "^2.5.16",
+    "vue-dragscroll": "^1.5.0",
     "vue-router": "^3.0.1",
     "vue-scroll": "^2.1.7",
     "vue-touch": "^2.0.0-beta.4",

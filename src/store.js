@@ -25,7 +25,7 @@ const mappy = {
     }
   },
   mutations: {
-
+    
     setCurrentRegion: function(state, region){
       // console.log('setting region', region)
       state.currentRegion = region

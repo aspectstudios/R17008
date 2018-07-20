@@ -7,9 +7,10 @@
     </v-navigation-drawer>
     
     <v-toolbar fixed app dense flat style="z-index: 99 !important" class="transparent">
-        <div class="northarrow cursordefault" v-if="!sketchfabMode">
+        <div class="northarrow cursordefault noevents noselect" v-if="!sketchfabMode">
       <!-- <v-tooltip bottom> -->
           <v-icon class="white--text">navigation</v-icon>
+          <div class="northlabel white--text">North</div>
         <!-- <span>North</span> -->
         <!-- </v-tooltip> -->
         </div>
@@ -36,6 +37,13 @@
     </v-toolbar>
 
     <v-content>
+
+      <div class="soilegend"  v-dragscroll :style="{'right': menuWidth+'px', opacity: soilMode ? 1:0}">
+        <div v-for="s in soils">
+          <div class="soil-square" :style="{'background-color':s.color}"></div>
+          <div class="soil-label noselect defaultcursor" v-text="s.name"></div>
+        </div>
+      </div>
       <!-- <v-alert v-if="staging" :style="{'pointer-events': 'all', 'z-index': '99 !important', 'top':'-7px', 'width':'calc( 100%  - '+this.menuwidth+'px )', 'right': this.menuWidth+'px', 'text-align': 'right' }" :value="true" type="warning" class="black--text" dismissible>
       Warning: You are on our testing website! - please visit <a href="https://ahwr-3d.surge.sh">ahwr-3d.surge.sh</a>
     </v-alert> -->
@@ -78,18 +86,44 @@
 
 <script>  
 import Vuex from 'vuex'
+import { dragscroll } from 'vue-dragscroll'
+
 export default {
+   directives: {
+     'dragscroll': dragscroll
+   },
   name: 'app',
   data (){ 
     return {
       snackbar: false,
       snackbarstaging: true,
       mini: null, 
-      exaggeration: 1
+      exaggeration: 1,
+      soils:[
+        {code: 'K1', name: 'Acidic gradational loam on rock', color: "#498c80"},
+        {code: 'K2', name: 'Acidic loam over clay on rock', color: "#71b469"},
+        {code: 'K4', name: 'Acidic sandy loam over brown or grey clay on r', color: "#bad91c"},
+        {code: 'F2', name: 'Sandy loam over poorly structured brown or dar', color: "#764a28"},
+        {code: 'L1', name: 'Shallow soil on rock', color: "#e73236"},
+        {code: 'K3', name: 'Acidic sandy loam over red clay on rock', color: "#98cd4d"},
+        {code: 'K5', name: 'Acidic gradational sandy loam on rock', color: "#dde406"},
+        {code: 'J2', name: 'Ironstone soil', color: "#ffc902"},
+        {code: 'G3', name: 'Thick sand over clay', color: "#fdec00"},
+        {code: 'G5', name: 'Sand over acidic clay', color: "#e1de68"},
+        {code: 'G4', name: 'Sand over poorly structured clay', color: "#fdd083"},
+        {code: 'F1', name: 'Loam over brown or dark clay', color: "#b18d67"},
+        {code: 'M2', name: 'Deep friable gradational clay loam', color: "#67ca31"},
+        {code: 'C2', name: 'Gradational loam on rock', color: "#fd75fc"},
+        {code: 'M1', name: 'Deep sandy loam', color: "#00be03"},
+        {code: 'I2', name: 'Wet highly leached sand', color: "#d7d8d0"},
+        {code: 'N1', name: 'Peat', color: "#80feff"},
+        {code: 'H3', name: 'Bleached siliceous sand', color: "#fffe9b"},
+        {code: 'E1', name: 'Black cracking clay', color: "#323432"}
+      ],
     }
   },
   computed:{
-    ...Vuex.mapGetters(['miniWidth', 'menuWidth', 'sketchfabMode', 'dialog', 'getExaggeration', 'sketchfabMode']),
+    ...Vuex.mapGetters(['miniWidth', 'menuWidth', 'sketchfabMode', 'dialog', 'getExaggeration', 'sketchfabMode', 'soilMode']),
 
     staging: function(){
       var s = window.location.href.indexOf('staging') > -1 ? true : false
@@ -106,6 +140,16 @@ export default {
   created(){
     var self = this
     this.setMenuWidth(this.getMenuWidth())
+    window.addEventListener(
+        "touchmove",
+        function(event) {
+            if (event.scale !== 1) {
+                event.preventDefault();
+            }
+        },
+        { passive: false }
+    );
+    
   },
   watch: {
     mini: function(val){
@@ -142,16 +186,15 @@ export default {
     // resizeHandler(){
     resizeHandler(){
       
-      // setTimeout(function () {
-      //   this.setMenuWidth(this.getMenuWidth())
-      //   this.setMapWidth(this.$vuetify.breakpoint.width - this.getMenuWidth())
-      // }.bind(this), 300)
-      // setTimeout(function () {
-      //   if(this._map && this._mapmini){
-      //     this._map.resize()
-      //     this._mapmini.resize()
-      //   }
-      // }.bind(this), 1000)
+      setTimeout(function () {
+        this.setMenuWidth(this.getMenuWidth())
+      }.bind(this), 300)
+      setTimeout(function () {
+        if(this._map && this._mapmini){
+          this._map.resize()
+          this._mapmini.resize()
+        }
+      }.bind(this), 1000)
 
 
       var bp = this.$vuetify.breakpoint.name
@@ -204,6 +247,9 @@ body, html {
   justify-content: center;
 }
 
+body, document, html{
+  overflow: hidden !important
+}
 
 @font-face {
     font-family: 'CircularStdBold';
@@ -275,6 +321,7 @@ header span {
 }
 
 
+
 .v-footer{
   background: transparent !important;
 }
@@ -335,16 +382,74 @@ header span {
 }
 
 .northarrow{
-  
   position: absolute;
   left: 25px;
   top: 25px;
   font-size: 30px;
   z-index: 2;
 }
-
+.northlabel{
+  font-size: 10px;
+  color: white;
+}
 .v-dialog, v-card{
   box-shadow: none !important;
+}
+
+.soilegend{
+  position: absolute;
+  overflow-y: scroll;
+  bottom: 0;
+  width: 50px;
+  height: 100vh;
+  
+  display: flex;
+  align-items: center;
+  // flex-wrap: wrap;
+  align-content: flex-start;
+  flex-direction: column;
+  z-index: 2
+}
+
+.soil-square{
+  width: 20 px;
+  height: 20px;
+  border-radius: 2px;
+  margin-bottom: 4px;
+  
+}
+
+.soil-label{
+  color: black;
+  font-size: 8px;
+  text-align: left;
+  margin-bottom: 16px;
+  line-height:8px;
+}
+
+
+.soilegend::-webkit-scrollbar { 
+    display: auto !important; 
+    z-index: 10;    
+}
+// Simple
+.soilegend::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+.soilegend::-webkit-scrollbar-track {
+  border-radius: 10px;
+  background: rgba(255,255,255,0.1);
+}
+.soilegend::-webkit-scrollbar-thumb{
+  border-radius: 10px;
+  background: rgba(255,255,255,0.2);
+}
+.soilegend::-webkit-scrollbar-thumb:hover{
+  background: rgba(255,255,255,0.4);
+}
+.soilegend::-webkit-scrollbar-thumb:active{
+  background: rgba(255,255,255,.9);
 }
 
 </style>

@@ -3,7 +3,7 @@
     
     <div class="logo-wrapper" @click="toggleBlendmode()">
       <img src="../assets/Adelaide Hills Avatar_white.svg" :class="['logo', {'clipped' : mini ? true : false}, 'noselect']" />
-      <div :class="['logo-subtitle', {'compact': mini ? true : false}]" style="">Adelaide Hills Wine Region</div>
+      <div :class="['logo-subtitle noselect ', {'compact': mini ? true : false}]" style="">Adelaide Hills Wine Region</div>
     </div>
 
 
@@ -21,18 +21,6 @@
 
       <div class="item" style="height: 20vh"></div>
       
-           <!-- <div class="gridRefInputWrapper"> -->
-          <!-- <v-text-field class="allevents gridRefInput" color="white" single-line v-model="gridRef" flat :rules="[rules.gridRef]"></v-text-field> -->
-          <!-- </div> -->
-
-        <!-- <div class="item">
-          <v-tooltip left>
-          <v-btn :disabled="sketchfabMode" @click="resetBearing()" slot="activator" icon large :ripple="false" class="white--text menu-btn allevents">
-            <v-icon>navigation</v-icon>
-          </v-btn>
-          <span>Reset North</span>
-        </v-tooltip>
-        </div> -->
 <!-- 
       <div class="item">
         <v-tooltip left>
@@ -88,6 +76,7 @@
 <!--         <div v-if="_map" class="latlng" :style="{'font-size': remap(menuWidth, 200, 500, 12, 14)+'px', 'left': mini ? '0' : miniWidth+'px', 'width': mini ? miniWidth+'px' : 'calc( 100% - '+miniWidth+'px)'}"><div>{{_map.getCenter().lat.toPrecision(mini ? 5 : 15)}}</div><div>{{_map.getCenter().lng.toPrecision(mini ? 5 : 15)}}</div></div> -->
       </div>
 
+    	<img src="static/minimap.png" class="minimap-png" :style="{'width': menuWidth +'px'}"/>
     </div>
     <transition name="fade">
 <!--     <mappy-mini v-show="!mini" v-if="menuWidth && _map" container="minimap" :class="['minimap']" zoom="8" :LngLat="[138.7435885246556, -34.38845881895241]" mapStyle="mapbox://styles/edanweis/cjio5nk6p1tz32qpbtjdkd8xv" :token="credentials.mapbox.token"></mappy-mini>  -->
@@ -179,11 +168,20 @@ export default {
 <style lang="stylus" scoped>
 @import '../stylus/helpers.styl'
 
+
+
 .wrapper{
   background-color: #fa9898;
   padding: 0 !important;  
 }
 
+.minimap-png{
+	mix-blend-mode: hard-light;
+	bottom: 0;
+	position: absolute;
+	z-index:0;
+	right: -61px;
+}
 
 .logo-subtitle{
 	position: relative;
