@@ -18,8 +18,13 @@
     v-bind:pan-options="{ direction: 'all', pointers: 0}"
     
     :style="style">
+    
+    <img src="static/soil.gif" class="soil" :style="{'opacity': soilMode ? 1 : 0}" />
+    <img src="static/winery-dots.gif" class="annotations" :style="{'opacity': soilMode ? 1 : 0}" />
+    <img src="static/annotations.gif" class="annotations" :style="{'opacity': soilMode ? 1 : 0}" />
+
     <img class="image" src="../assets/static_map.gif" @click="disabled ? null : backgroundClick()"  alt=""  ref="image" key="1"  :usemap="disabled ? '' : '#map'" />
-    <img v-for="i in images" :src="'../static/overlays/cropped/'+i.name+'.gif'" class="region" :style="{left: i.x+'px', top: i.y+'px', opacity: ((currentRegion == i.name) || (currentRegion == 'blank')) ? 1 : 0.4}"/>
+    <img  v-for="i in images" :src="'../static/overlays/cropped/'+i.name+'.gif'" class="region" :style="{left: i.x+'px', top: i.y+'px', opacity: ((currentRegion == i.name) || (currentRegion == 'blank') )? 1 : 0.4}"/>
     
    <map name="map">
     <area shape="poly" @click="clickHandler('kuitpo')" coords="1252, 2755, 1386, 2822, 1409, 2805, 1412, 2768, 1432, 2762, 1439, 2787, 1504, 2801, 1512, 2842, 1498, 2881, 1467, 2891, 1468, 2951, 1487, 2973, 1435, 3145, 1165, 3392, 1120, 3408, 1029, 3367, 985, 3310, 994, 3232, 1094, 3092, 1180, 2915, 1209, 2920, 1222, 2900, 1207, 2880, 1225, 2852, 1245, 2864" />
@@ -97,7 +102,7 @@ export default {
   	imageMapResize()
   },
   computed:{
-  	...Vuex.mapGetters(['menuWidth', 'currentRegion']),
+  	...Vuex.mapGetters(['menuWidth', 'currentRegion', 'soilMode']),
 
     style: function(val){
       return {transform: 'translate('+ this.x +'px, '+this.y+'px) scale('+ this.scale +')', 'transform-origin': 'center center'}
@@ -242,8 +247,27 @@ export default {
 	transform: scale(0.41939);
 	opacity: 1;
 	transform-origin: top left;
-
-
 }
 
+.soil{
+	transition: opacity 245ms ease-out;
+	position: absolute;
+	/*width: 1920px;*/
+	transform: scale(0.1155);
+	transform-origin: top left;
+	left: 416px;
+	top: 596px;
+	z-index: 1;
+}
+
+.annotations{
+	transition: opacity 245ms ease-out;
+	position: absolute;
+	left: 0;
+	top: 0;
+	width: 1920px;
+	pointer-events: none;
+	z-index: 2;
+
+}
 </style>

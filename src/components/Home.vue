@@ -1,5 +1,7 @@
 <template>
   <div class="wrapper">
+  		
+
       <div-panner :disabled="sketchfabMode ? true : false" ></div-panner>
       <div :class="['overlay3d', {'sketchfabMode': sketchfabLoaded && sketchfabMode ? true : false}]"></div>      
     <transition name='fade'>
@@ -13,7 +15,7 @@
 
       <sketchfab :style="{'opacity': sketchfabLoaded && sketchfabMode ? 1 : 0, 'transition-delay':  sketchfabLoaded && sketchfabMode ? 0 : 2000}" v-if="currentRegion && sketchfabMode" v-show="sketchfabLoaded"  class="sketchfab-wrapper" :urlid="sketchfabDB[currentRegion]" autospin='0' autostart='1' preload='1' ui_controls='0' ui_infos='0' ui_related='0' transparent='1' scrolling="no"></sketchfab>
 
-     <div class="map-overlay" v-if="!blendmode"></div>
+     <div class="map-overlay" :style="{'width': sketchfabMode ? menuWidth+'px' : '100vw'}" v-if="!blendmode"></div>
 
       </div>
 </template>
@@ -106,13 +108,12 @@ export default {
 .map-overlay{
   pointer-events: none;
   position: absolute;
-  left: 0;
+  right: 0;
   top: 0;
-  width: 100vw;
   height: 100vh;
   background-color: #a82dae;
   mix-blend-mode: soft-light;
-  z-index: 4;
+  z-index: 2;
 }
 
 
@@ -191,12 +192,12 @@ export default {
   flex-wrap: wrap;
   flex-direction: column;
   font-family: Raleway;
-  /*font-weight: 400;*/
   font-size: 24px;
   color: #dfefe5;
   transition: all 145ms cubic-bezier(.64,.02,.14,.94);
   z-index: 7;
 }
+
 
 
 </style>

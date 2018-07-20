@@ -1,11 +1,20 @@
 <template>
    <v-app id="inspire" v-resize="resizeHandler">
+    <div class="footer-logo noevents noselect">terroir</div>
     <v-navigation-drawer :mini-variant.sync="mini" :width="menuWidth" :mini-variant-width="miniWidth" hide-overlay fixed permanent stateless touchless right app class="elevation-14 overflowhidden cursordefault navigationDrawer">
       <router-view name="drawer"></router-view>
       <!-- <div class="close-button"><v-icon>close</v-icon></div> -->
     </v-navigation-drawer>
     
     <v-toolbar fixed app dense flat style="z-index: 99 !important" class="transparent">
+        <div class="northarrow cursordefault" v-if="!sketchfabMode">
+      <!-- <v-tooltip bottom> -->
+          <v-icon class="white--text">navigation</v-icon>
+        <!-- <span>North</span> -->
+        <!-- </v-tooltip> -->
+        </div>
+
+
       <v-spacer></v-spacer>
       <v-tooltip left>
         
@@ -31,19 +40,30 @@
       Warning: You are on our testing website! - please visit <a href="https://ahwr-3d.surge.sh">ahwr-3d.surge.sh</a>
     </v-alert> -->
       <router-view></router-view>
-      <v-dialog v-model="dialog" max-width="500px">
-             <v-card>
+      <v-dialog v-model="dialog" max-width="500px" class="elevation-0">
+             <v-card class="elevation-0">
                <v-card-text>
                  <img src="./assets/terroir.svg" class="terroir-logo">
-                 <div class="body">By Urban&amp;Public</div>
-                 <div class="body">3D terrain aerial photo imagery by Nearmap Ltd.</div>
+                 <div class="body">By Urban&amp;Public</div><br/>
+                 <div class="body">Map imagery: Google, DigitalGlobe.</div>
                </v-card-text>
              </v-card>
            </v-dialog>
+
+            <!-- <v-tooltip left> -->
+             <transition name="fade-slide-left">
+             <div v-if="sketchfabMode" class="slider-wrapper">
+             <div class="slider-caption" >Vertical terrain exaggeration</div>
+             <div class="slider">
+                <v-slider  color="white" v-show="true"  v-model="exaggeration" prepend-icon="filter_hdr" ></v-slider>
+             </div>
+             </div>
+           </transition>
+               <!-- </v-tooltip> -->
+
     </v-content>
     
     <v-footer app style="z-index: 2 !important" class="noevents">
-
     </v-footer>
     <v-snackbar v-model="snackbar" absolute style="z-index: 6 !important" bottom :timeout="0">
       Best viewed in Chrome or Safari on a notebook or desktop computer.
@@ -69,7 +89,7 @@ export default {
     }
   },
   computed:{
-    ...Vuex.mapGetters(['miniWidth', 'menuWidth', 'sketchfabMode', 'dialog', 'getExaggeration']),
+    ...Vuex.mapGetters(['miniWidth', 'menuWidth', 'sketchfabMode', 'dialog', 'getExaggeration', 'sketchfabMode']),
 
     staging: function(){
       var s = window.location.href.indexOf('staging') > -1 ? true : false
@@ -200,9 +220,10 @@ body, html {
   font-size: 5vw;
   color: #153a29;  
   position: absolute;
-  left: 10px;
-  top: -6vw;
-  opacity: 0.9;
+  bottom: 15px;
+  left: 15px;
+  opacity: 1;
+  z-index: 99;
   
 }
 
@@ -282,8 +303,9 @@ header span {
 
 .slider-wrapper{
   position: absolute;
-  top:33px;
+  top:53px;
   left: 35px;
+  z-index:99 !important;
 }
 
 .slider-wrapper i{
@@ -297,7 +319,8 @@ header span {
   align-items: center;
   justify-content: flex-start;
   // position: absolute;
-  width: 250px;
+  margin-top: 12px;
+  width: 192px;
   height: auto;
   // top: 34px;
   z-index: 99 !important;
@@ -309,6 +332,19 @@ header span {
 .slider-caption{
   color: white;
   line-height: 0.9em;
+}
+
+.northarrow{
+  
+  position: absolute;
+  left: 25px;
+  top: 25px;
+  font-size: 30px;
+  z-index: 2;
+}
+
+.v-dialog, v-card{
+  box-shadow: none !important;
 }
 
 </style>

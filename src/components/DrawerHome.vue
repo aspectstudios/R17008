@@ -25,10 +25,10 @@
           <!-- <v-text-field class="allevents gridRefInput" color="white" single-line v-model="gridRef" flat :rules="[rules.gridRef]"></v-text-field> -->
           <!-- </div> -->
 
-<!--         <div class="item">
+        <!-- <div class="item">
           <v-tooltip left>
           <v-btn :disabled="sketchfabMode" @click="resetBearing()" slot="activator" icon large :ripple="false" class="white--text menu-btn allevents">
-            <v-icon :style="{'transform': 'rotate('+String(360-north)+'deg)'}">navigation</v-icon>
+            <v-icon>navigation</v-icon>
           </v-btn>
           <span>Reset North</span>
         </v-tooltip>
@@ -63,12 +63,12 @@
       </v-tooltip>
       </div>
 
-<!--         <div class="item">
+        <div class="item">
       <v-tooltip left>      
           <v-btn slot="activator" :disabled="sketchfabMode" @click="enterSoilMode()"  icon large class="white--text menu-btn allevents"><v-icon v-text="soilMode ? 'layers_clear' : 'layers'" ></v-icon></v-btn>
         <span v-text="soilMode ? 'Turn off soil layer' : 'Turn on soil layer'"></span>
       </v-tooltip>
-        </div> -->
+        </div>
 
 <!--         <div class="item">
       <v-tooltip left>      

@@ -13,6 +13,7 @@
     "array.from": "^1.0.3",
     "axios": "^0.18.0",
     "babel-polyfill": "^6.26.0",
+    "gl-matrix": "^2.7.0",
     "image-map-resizer": "^1.0.7",
     "stylus": "^0.54.5",
     "stylus-loader": "^3.0.2",
