@@ -28,7 +28,7 @@ export default {
   },
   mounted(){
     // init viewer for the first time.
-    console.log('initating viewer with ID: ', this.urlid)
+    // console.log('initating viewer with ID: ', this.urlid)
     this.initViewer(this.urlid)
 
   },
@@ -43,7 +43,7 @@ export default {
       this._api.getMatrix( 406, function( err, matrices ) {
             if(!err){
               var scaledMatrix = mat4.create();
-              console.log('matrices', matrices)
+              // console.log('matrices', matrices)
               // var scale = Number(leftValue);
               mat4.fromScaling(scaledMatrix, [1,1,Math.max(0.1,val*0.02)]);
               self._api.setMatrix( 406, scaledMatrix );
@@ -59,7 +59,7 @@ export default {
 
   initViewer(id){
       var self = this
-      console.log(this.$refs.api_iframe)
+      // console.log(this.$refs.api_iframe)
       this.client = new sketchfab.Sketchfab( this.$refs.api_iframe )
       this.client.init( id, {
          success: function onSuccess( api ){  
@@ -102,7 +102,7 @@ export default {
   readyHandler(){
     var self = this
     this.setSketchfabLoaded(true)
-    console.log('readyHandler')
+    // console.log('readyHandler')
   }
 }
 }

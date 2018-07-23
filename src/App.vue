@@ -9,7 +9,8 @@
     <v-toolbar fixed app dense flat style="z-index: 99 !important" class="transparent">
         <div class="northarrow cursordefault noevents noselect" v-if="!sketchfabMode">
       <!-- <v-tooltip bottom> -->
-          <v-icon class="white--text">navigation</v-icon>
+          <!-- <v-icon class="white--text">navigation</v-icon> -->
+          <img src="static/icons/baseline-navigation-24px.svg" style="width: 24px;" />
           <div class="northlabel white--text">North</div>
         <!-- <span>North</span> -->
         <!-- </v-tooltip> -->
@@ -19,7 +20,12 @@
       <v-spacer></v-spacer>
       <v-tooltip left>
         
-        <v-btn v-show="sketchfabMode" slot="activator" class="elevation-0 close-button" fab outline small color="white white--text" @click="buttonHandler()"><v-icon>arrow_forward</v-icon></v-btn>
+        <v-btn v-show="sketchfabMode" slot="activator" class="elevation-0 close-button" fab outline small color="white white--text" @click="buttonHandler()">
+          <!-- <v-icon>arrow_forward</v-icon> -->
+          <img src="static/icons/baseline-arrow_forward-24px.svg" style="width:24px;" />
+
+        </v-btn>
+
         <span>Back to 2D Map</span>
       </v-tooltip>
 
@@ -29,10 +35,15 @@
 
 
       <transition name="fadeIn">
-      <v-toolbar-side-icon v-if="mini" class="white--text menu-icon" @click.stop="mini = !mini"></v-toolbar-side-icon>
-      <v-btn icon @click.native.stop="mini =!mini" class="white--text menu-icon" v-else>
-      <v-icon class="white--text">close</v-icon>
+      <!-- <v-toolbar-side-icon v-if="mini" class="white--text menu-icon" @click.stop="mini = !mini"></v-toolbar-side-icon> -->
+      <v-btn icon class="menu-icon" v-if="mini" @click.stop="mini = !mini">
+        <img src="static/icons/baseline-menu-24px.svg" style="width: 24px; height: 24px;" />
       </v-btn>
+
+      <v-btn v-else icon @click.native.stop="mini =!mini"   class="white--text menu-icon" >
+        <img src="static/icons/baseline-close-24px.svg" style="width: 24px; height: 24px;" />
+      </v-btn>
+      
       </transition> 
     </v-toolbar>
 
@@ -61,9 +72,10 @@
             <!-- <v-tooltip left> -->
              <transition name="fade-slide-left">
              <div v-if="sketchfabMode" class="slider-wrapper">
+              <img src="static/icons/baseline-filter_hdr-24px.svg" style="width: 24px; height: 24px; display: inline !important;" />
              <div class="slider-caption" >Vertical terrain exaggeration</div>
              <div class="slider">
-                <v-slider  color="white" v-show="true"  v-model="exaggeration" prepend-icon="filter_hdr" ></v-slider>
+                <v-slider  color="white" v-show="true" v-model="exaggeration" ></v-slider>
              </div>
              </div>
            </transition>
@@ -266,8 +278,8 @@ body, document, html{
   font-size: 5vw;
   color: #153a29;  
   position: absolute;
-  bottom: 15px;
-  left: 15px;
+  bottom: 26px;
+  left: 10px;
   opacity: 1;
   z-index: 99;
   
@@ -278,6 +290,8 @@ body, document, html{
   right: 0px;
   top: 0px;
   margin-right: 12px !important;
+  // width: 36px;
+  
 }
 main {
   padding: 0px !important;
@@ -367,7 +381,7 @@ header span {
   justify-content: flex-start;
   // position: absolute;
   margin-top: 12px;
-  width: 192px;
+  width: 169px;
   height: auto;
   // top: 34px;
   z-index: 99 !important;
@@ -379,6 +393,9 @@ header span {
 .slider-caption{
   color: white;
   line-height: 0.9em;
+  display: inline;
+  top: -6px;
+  position: relative;
 }
 
 .northarrow{

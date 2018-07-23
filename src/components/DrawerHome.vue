@@ -3,14 +3,15 @@
     
     <div class="logo-wrapper" @click="toggleBlendmode()">
       <img src="../assets/Adelaide Hills Avatar_white.svg" :class="['logo', {'clipped' : mini ? true : false}, 'noselect']" />
-      <div :class="['logo-subtitle noselect ', {'compact': mini ? true : false}]" style="">Adelaide Hills Wine Region</div>
+      <!-- <div :class="['logo-subtitle noselect ', {'compact': mini ? true : false}]" style="">Adelaide Hills Wine Region</div> -->
     </div>
 
 
-    <div :class="['overlay-grad', 'noevents']" :style="{'width': 'calc(100% - ' + miniWidth +'px)' }"></div>
-    <div class="overlay-mapmini noevents" :style="{'mix-blend-mode' : blendmode ? 'normal':'exclusion', 'filter' : 'hue-rotate('+huerotate+'deg)'}"></div>
+    <div :class="['overlay-grad', 'noevents']"></div>
+    <div class="overlay-mapmini noevents"></div>
 
     <div class="menu noevents">  
+   <div class="grad-strip"></div>
       
 
       <!-- spacer -->
@@ -19,7 +20,8 @@
         <!-- <terrain-profile v-show="!mini"></terrain-profile> -->
       <!-- </div> -->
 
-      <div class="item" style="height: 20vh"></div>
+      <div class="item" style="height: 20vh">
+      </div>
       
 <!-- 
       <div class="item">
@@ -43,17 +45,28 @@
 
         <v-btn v-else icon large :ripple="false" slot="activator" :class="['white--text', 'menu-btn', 'noevents']">
            <v-progress-circular v-if="(!sketchfabLoaded ) && sketchfabMode"indeterminate color="white" class="noevents"></v-progress-circular>
-          <v-icon v-else-if="sketchfabLoaded && sketchfabMode">done</v-icon>
+          <!-- <v-icon >done</v-icon> -->
+          <img v-else-if="sketchfabLoaded && sketchfabMode" src="static/icons/baseline-done-24px.svg" style="width: 24px;" />
         </v-btn>
+        <div v-if="!sketchfabLoaded || soilMode">
         <span>View in 3D</span>
-        <div><i class="material-icons white--text" style="position:relative;left: 15px">arrow_downwards</i></div>
+        <div>
+        	<img src="static/icons/baseline-arrow_downward-24px.svg" style="width: 24px;position:relative;left: 15px" />
+        	<!-- <i class="material-icons white--text" style="position:relative;left: 15px">arrow_downwards</i> -->
+
+        </div>
+        </div>
         
       </v-tooltip>
       </div>
 
         <div class="item">
       <v-tooltip left>      
-          <v-btn slot="activator" :disabled="sketchfabMode" @click="enterSoilMode()"  icon large class="white--text menu-btn allevents"><v-icon v-text="soilMode ? 'layers_clear' : 'layers'" ></v-icon></v-btn>
+          <v-btn slot="activator" :disabled="sketchfabMode" @click="enterSoilMode()"  icon large class="white--text menu-btn allevents">
+          	<!-- <v-icon v-text="soilMode ? 'layers_clear' : 'layers'" ></v-icon> -->
+          	<img v-if="soilMode" src="static/icons/baseline-layers_clear-24px.svg" style="width: 24px;" />
+          	<img v-else src="static/icons/baseline-layers-24px.svg" style="width: 24px;" />
+          </v-btn>
         <span v-text="soilMode ? 'Turn off soil layer' : 'Turn on soil layer'"></span>
       </v-tooltip>
         </div>
@@ -67,7 +80,7 @@
 
       <div class="item">
         <v-tooltip left>  
-        <v-btn icon large @click.stop="toggleDialog()" slot="activator" class="white--text menu-btn allevents"><v-icon>help</v-icon></v-btn>
+        <v-btn icon large @click.stop="toggleDialog()" slot="activator" class="white--text menu-btn allevents"><img src="static/icons/baseline-help-24px.svg" style="width: 24px;" /></v-btn>
         <span>About terrior</span>
       </v-tooltip>
       </div>
@@ -173,14 +186,16 @@ export default {
 .wrapper{
   background-color: #fa9898;
   padding: 0 !important;  
+  overflow: hidden;
 }
 
 .minimap-png{
-	mix-blend-mode: hard-light;
+	// mix-blend-mode: hard-light;
 	bottom: 0;
 	position: absolute;
 	z-index:0;
 	right: -61px;
+	opacity: 0.5;
 }
 
 .logo-subtitle{
@@ -262,8 +277,8 @@ export default {
 
 .logo-wrapper{
   position: absolute;
-  mix-blend-mode: overlay;
-  filter: saturate(33%);
+  // mix-blend-mode: overlay;
+  // filter: saturate(33%);
   top: 0;
   left: 0;
   width: 100%;
@@ -273,7 +288,7 @@ export default {
   align-items: normal;
   justify-content: center;
   padding: 60px 30px 0 30px;
-  z-index: 2;
+  z-index: 3;
   // transition: rotate 100
 }
 
@@ -294,7 +309,7 @@ export default {
 }
 
 .minimap{
-  mix-blend-mode: screen;
+  // mix-blend-mode: screen;
   opacity: 1;
   // hide Mapbox logo
   top: 40px;
@@ -324,7 +339,11 @@ left:0;
 width: 100%;
 height: auto;
 z-index: 2;
-mix-blend-mode: overlay
+background: rgb(191,142,102);
+background: -moz-linear-gradient(top, rgba(191,142,102,1) 0%, rgba(249,135,119,1) 100%);
+background: -webkit-linear-gradient(top, rgba(191,142,102,1) 0%,rgba(249,135,119,1) 100%);
+background: linear-gradient(to bottom, rgba(191,142,102,1) 0%,rgba(249,135,119,1) 100%);
+// mix-blend-mode: overlay
 
 }
 
@@ -354,12 +373,24 @@ mix-blend-mode: overlay
 .item{
   position: relative;
   width: 100%;
-  background-color: #624949;
+  // background-color: #624949;
   height: 60px;
   display: flex;
   align-items: center;
   justify-items: center;
   // border-top: 1px solid #C54C4C; 
+}
+
+.grad-strip{
+	width: 60px;
+	position: absolute;
+	left: 0;
+	bottom: 0;
+	height: 100vh;	
+	pointer-events:none;
+	background: linear-gradient(to bottom, rgba(248,108,107,0) 0%, #da4a4952 100%)
+	
+	
 }
 
 .gridRefInput{
@@ -373,9 +404,10 @@ mix-blend-mode: overlay
 
 .overlay-grad{
   position: absolute;
-  mix-blend-mode: soft-light;
+  // mix-blend-mode: soft-light;
   pointer-events: none;
   bottom: 0;
+  width 100%;
   right: 0 !important;
   height: 100vh;
   opacity: 0.7;

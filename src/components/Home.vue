@@ -15,7 +15,7 @@
 
       <sketchfab :style="{'opacity': sketchfabLoaded && sketchfabMode ? 1 : 0, 'transition-delay':  sketchfabLoaded && sketchfabMode ? 0 : 2000}" v-if="currentRegion && sketchfabMode" v-show="sketchfabLoaded"  class="sketchfab-wrapper" :urlid="sketchfabDB[currentRegion]" autospin='0' autostart='1' preload='1' ui_controls='0' ui_infos='0' ui_related='0' transparent='1' scrolling="no"></sketchfab>
 
-     <div class="map-overlay" :style="{'width': sketchfabMode ? menuWidth+'px' : '100vw'}" v-if="!blendmode"></div>
+     <!-- <div class="map-overlay" :style="{'width': sketchfabMode ? menuWidth+'px' : '100vw'}" v-if="!blendmode"></div> -->
 
       </div>
 </template>
@@ -112,7 +112,7 @@ export default {
   top: 0;
   height: 100vh;
   background-color: #a82dae;
-  mix-blend-mode: soft-light;
+  /*mix-blend-mode: soft-light;*/
   z-index: 2;
 }
 
