@@ -15,6 +15,7 @@
     "babel-polyfill": "^6.26.0",
     "gl-matrix": "^2.7.0",
     "image-map-resizer": "^1.0.7",
+    "screenfull": "^3.3.2",
     "stylus": "^0.54.5",
     "stylus-loader": "^3.0.2",
     "v-viewer": "^1.0.1",
@@ -65,7 +66,8 @@
     "webpack-bundle-analyzer": "^2.9.0",
     "webpack-dev-middleware": "^1.12.0",
     "webpack-hot-middleware": "^2.19.1",
-    "webpack-merge": "^4.1.0"
+    "webpack-merge": "^4.1.0",
+    "webpack-modernizr-loader": "^4.0.1"
   },
   "engines": {
     "node": ">= 4.0.0",

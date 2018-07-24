@@ -1,6 +1,7 @@
 <template>
    <v-app id="inspire" v-resize="resizeHandler">
-    <div class="footer-logo noevents noselect">terroir</div>
+  <!-- <fullscreen :fullscreen.sync="fullscreen" @change="fullscreenChange"> -->
+    <div class="footer-logo noevents noselect" ref="myApp">terroir</div>
     <v-navigation-drawer :mini-variant.sync="mini" :width="menuWidth" :mini-variant-width="miniWidth" hide-overlay fixed permanent stateless touchless right app class="elevation-14 overflowhidden cursordefault navigationDrawer">
       <router-view name="drawer"></router-view>
       <!-- <div class="close-button"><v-icon>close</v-icon></div> -->
@@ -70,7 +71,7 @@
            </v-dialog>
 
             <!-- <v-tooltip left> -->
-             <transition name="fade-slide-left">
+             <!-- <transition name="fade-slide-left">
              <div v-if="sketchfabMode" class="slider-wrapper">
               <img src="static/icons/baseline-filter_hdr-24px.svg" style="width: 24px; height: 24px; display: inline !important;" />
              <div class="slider-caption" >Vertical terrain exaggeration</div>
@@ -78,7 +79,7 @@
                 <v-slider  color="white" v-show="true" v-model="exaggeration" ></v-slider>
              </div>
              </div>
-           </transition>
+           </transition> -->
                <!-- </v-tooltip> -->
 
     </v-content>
@@ -86,19 +87,26 @@
     <v-footer app style="z-index: 2 !important" class="noevents">
     </v-footer>
     <v-snackbar v-model="snackbar" absolute style="z-index: 6 !important" bottom :timeout="0">
-      Best viewed in Chrome or Safari on a notebook or desktop computer.
-      <v-btn color="white" flat @click="snackbar = false" icon><v-icon>close</v-icon></v-btn>
+      Using a notebook or desktop computer?&nbsp;<a target="_parent" href="https://ahwr-3d.surge.sh" style="color:#71b6ff; margin-left: 10px;">Get a better experience</a>
+      <v-btn color="white" flat @click="snackbar = false" icon>
+        <img src="static/icons/baseline-close-24px.svg" style="width: 24px" />
+      </v-btn>
     </v-snackbar>
     <v-snackbar error v-model="staging" absolute style="z-index: 99 !important" top :timeout="0">
       Warning: You are on our testing website! - please visit <a href="https://ahwr-3d.surge.sh">&nbsp;ahwr-3d.surge.sh</a>
       <v-btn color="white" flat @click="snackbarstaging = false" icon><v-icon>close</v-icon></v-btn>
     </v-snackbar>
+<!-- </fullscreen> -->
   </v-app>
 </template>
 
 <script>  
+import Vue from 'vue'
 import Vuex from 'vuex'
 import { dragscroll } from 'vue-dragscroll'
+// import fullscreen from 'vue-fullscreen'
+// Vue.use(fullscreen)
+
 
 export default {
    directives: {
@@ -107,7 +115,7 @@ export default {
   name: 'app',
   data (){ 
     return {
-      snackbar: false,
+      snackbar: true,
       snackbarstaging: true,
       mini: null, 
       exaggeration: 1,
@@ -135,7 +143,7 @@ export default {
     }
   },
   computed:{
-    ...Vuex.mapGetters(['miniWidth', 'menuWidth', 'sketchfabMode', 'dialog', 'getExaggeration', 'sketchfabMode', 'soilMode']),
+    ...Vuex.mapGetters(['miniWidth', 'menuWidth', 'sketchfabMode', 'dialog', 'getExaggeration', 'sketchfabMode', 'soilMode', 'fullscreen']),
 
     staging: function(){
       var s = window.location.href.indexOf('staging') > -1 ? true : false
@@ -150,6 +158,11 @@ export default {
 
   },
   created(){
+    
+    // if(modernizr.inputtypes.date) {
+    //    console.log('inputtypes dates check!..')
+    // }
+
     var self = this
     this.setMenuWidth(this.getMenuWidth())
     window.addEventListener(
@@ -177,6 +190,10 @@ export default {
 
   methods: {
     ...Vuex.mapMutations(['setMini', 'setMenuWidth', 'setMapWidth', 'setSketchfabMode', 'setExaggeration']),
+
+    fullscreenChange(){
+      console.log('change')
+    },
 
     getMenuWidth: function(){
       if(this.mini){

@@ -24,6 +24,7 @@ module.exports = {
   resolve: {
     extensions: ['.js', '.vue', '.json'],
     alias: {
+      // modernizr$: resolve("src/.modernizrrc.js"),
       'vue$': 'vue/dist/vue.esm.js',
       '@': resolve('src')
     }
@@ -63,7 +64,11 @@ module.exports = {
           limit: 10000,
           name: utils.assetsPath('fonts/[name].[hash:7].[ext]')
         }
-      }
+      },
+      // {
+      //   loader: "webpack-modernizr-loader",
+      //   test: /\.modernizrrc\.js$/
+      // }
     ]
   }
 }

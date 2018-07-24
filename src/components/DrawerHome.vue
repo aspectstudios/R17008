@@ -38,9 +38,20 @@
       </div> -->
 
       <div class="item">
+        <v-tooltip left>  
+        <v-btn icon large @click.stop="toggleFullscreen
+        ()" slot="activator" class="white--text menu-btn allevents">
+        <img src="static/icons/baseline-fullscreen-24px.svg"  style="width: 24px" />
+        <!-- <img src="static/icons/baseline-fullscreen_exit-24px.svg" v-else  style="width: 24px" /> -->
+        </v-btn>
+        <span>Fullscreen</span>
+      </v-tooltip>
+      </div>
+
+      <div class="item">
         <v-tooltip warning top v-model="tooltipshow">  
-        <v-btn v-if="!sketchfabMode" slot="activator" @click="currentRegion? tl3d() : null" icon large :ripple="false" :class="['white--text', 'menu-btn', 'allevents']">
-          <span class="three-d"><img src="../assets/3d.svg" style="width: 55%; top: 2px; position: relative" ></span>
+        <v-btn :disabled="soilMode" v-if="!sketchfabMode" slot="activator" @click="currentRegion? tl3d() : null" icon large :ripple="false" :class="['white--text', 'menu-btn', 'allevents']">
+          <span class="three-d"><img src="../assets/3d.svg" style="width: 55%; top: 2px; position: relative" /></span>
         </v-btn>
 
         <v-btn v-else icon large :ripple="false" slot="activator" :class="['white--text', 'menu-btn', 'noevents']">
@@ -48,7 +59,7 @@
           <!-- <v-icon >done</v-icon> -->
           <img v-else-if="sketchfabLoaded && sketchfabMode" src="static/icons/baseline-done-24px.svg" style="width: 24px;" />
         </v-btn>
-        <div v-if="!sketchfabLoaded || soilMode">
+        <div>
         <span>View in 3D</span>
         <div>
         	<img src="static/icons/baseline-arrow_downward-24px.svg" style="width: 24px;position:relative;left: 15px" />
@@ -107,7 +118,12 @@
 </template>
 
 <script>
+import Vue from 'vue'
 import Vuex from 'vuex'
+import screenfull from 'screenfull';
+// import fullscreen from 'vue-fullscreen'
+// Vue.use(fullscreen)
+
 export default {
   name: 'home',
   data () {
@@ -120,6 +136,7 @@ export default {
     }
   },
   watch: {
+  	
     currentRegion: function(val){
     	if(val != 'blank'){
 	    	if(!this.tooltip){
@@ -146,8 +163,12 @@ export default {
   },
 
   methods: {
-    ...Vuex.mapMutations(['toggleLaunch3D', 'setSoilMode', 'toggleDialog', 'toggleBlendmode','setQualitytexture', 'setExaggeration', 'setSketchfabMode']),
+    ...Vuex.mapMutations(['toggleLaunch3D', 'setSoilMode', 'toggleDialog', 'toggleBlendmode','setQualitytexture', 'setExaggeration', 'setSketchfabMode', 'setFullscreen']),
 
+    toggleFullscreen(){
+    	screenfull.toggle();   	
+    	
+    },
     tl3d(){
     	this.setSketchfabMode(true)
     	this.tooltipshow = false

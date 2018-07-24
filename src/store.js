@@ -7,6 +7,7 @@ const mappy = {
   state: {
     launch3D: false,
     loading: false,
+    fullscreen: false,
     mini: false,
     miniWidth: 61,
     menuWidth: null,
@@ -29,6 +30,10 @@ const mappy = {
     setCurrentRegion: function(state, region){
       // console.log('setting region', region)
       state.currentRegion = region
+    },
+    setFullscreen: function(state, bool){
+      // this.$refs['fullscreen'].toggle()
+      state.fullscreen = bool
     },
     setExaggeration: function(state, num){
       state.exaggeration = num
@@ -83,6 +88,7 @@ const mappy = {
   },
   getters: {
     dialog: state => state.dialog,
+    fullscreen: state => state.fullscreen,
     getExaggeration: state => state.exaggeration,
     qualityTexture: state => state.qualityTexture,
     blendmode: state => state.blendmode,
