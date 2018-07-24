@@ -37,12 +37,12 @@
       </v-tooltip>
       </div> -->
 
-      <div class="item">
+      <div class="item" v-if="fullscreenEnabled">
         <v-tooltip left>  
         <v-btn icon large @click.stop="toggleFullscreen
         ()" slot="activator" class="white--text menu-btn allevents">
-        <img src="static/icons/baseline-fullscreen-24px.svg"  style="width: 24px" />
-        <!-- <img src="static/icons/baseline-fullscreen_exit-24px.svg" v-else  style="width: 24px" /> -->
+        <img src="static/icons/baseline-fullscreen-24px.svg" v-if="!isFullscreen()" style="width: 24px" />
+        <img src="static/icons/baseline-fullscreen_exit-24px.svg" v-else  style="width: 24px" />
         </v-btn>
         <span>Fullscreen</span>
       </v-tooltip>
@@ -50,7 +50,7 @@
 
       <div class="item">
         <v-tooltip warning top v-model="tooltipshow">  
-        <v-btn :disabled="soilMode" v-if="!sketchfabMode" slot="activator" @click="currentRegion? tl3d() : null" icon large :ripple="false" :class="['white--text', 'menu-btn', 'allevents']">
+        <v-btn :style="{'opacity': currentRegion == 'blank' ? 0.2 : 1, 'pointer-events': currentRegion == 'blank' ? 'none !important' : 'all !important' }" v-if="!sketchfabMode" slot="activator" @click="currentRegion? tl3d() : null" icon large :ripple="false" :class="['white--text', 'menu-btn', 'allevents']">
           <span class="three-d"><img src="../assets/3d.svg" style="width: 55%; top: 2px; position: relative" /></span>
         </v-btn>
 
@@ -154,11 +154,20 @@ export default {
     }
   },
   computed: {
-    ...Vuex.mapGetters(['loading', 'miniWidth', 'menuWidth', 'sketchfabLoaded', 'sketchfabMode', 'soilMode', 'blendmode', 'qualityTexture', 'getExaggeration', 'currentRegion', 'mini']),
+    ...Vuex.mapGetters(['loading', 'miniWidth', 'menuWidth', 'sketchfabLoaded', 'sketchfabMode', 'soilMode', 'blendmode', 'qualityTexture', 'getExaggeration', 'currentRegion', 'mini', 'fullscreen']),
 
     qualityString: function(){
     	var s = {ld: 'low', sd: 'med', hd: 'high'}
     	return s[this.qualityTexture]
+    },
+
+
+    fullscreenEnabled: function(){
+    	if (!screenfull.enabled) {
+    		return false
+    	} else{
+    		return true
+    	}
     }
   },
 
@@ -166,9 +175,16 @@ export default {
     ...Vuex.mapMutations(['toggleLaunch3D', 'setSoilMode', 'toggleDialog', 'toggleBlendmode','setQualitytexture', 'setExaggeration', 'setSketchfabMode', 'setFullscreen']),
 
     toggleFullscreen(){
-    	screenfull.toggle();   	
+    	this.setFullscreen(!this.fullscreen)
+    	screenfull.toggle()
     	
     },
+
+    isFullscreen: function(){
+    	console.log(screenfull.isFullscreen)
+    	return screenfull.isFullscreen
+    },
+
     tl3d(){
     	this.setSketchfabMode(true)
     	this.tooltipshow = false
