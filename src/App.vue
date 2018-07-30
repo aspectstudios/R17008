@@ -21,7 +21,7 @@
       <v-spacer></v-spacer>
       <v-tooltip left>
         
-        <v-btn v-show="sketchfabMode" slot="activator" class="elevation-0 close-button" fab outline small color="white white--text" @click="buttonHandler()">
+        <v-btn v-show="sketchfabMode" slot="activator" class="elevation-0 close-button" fab outline small color="black black--text" @click="buttonHandler()">
           <!-- <v-icon>arrow_forward</v-icon> -->
           <img src="static/icons/baseline-arrow_forward-24px.svg" style="width:24px;" />
 
