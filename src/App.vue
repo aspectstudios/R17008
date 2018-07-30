@@ -1,6 +1,6 @@
 <template>
    <v-app id="inspire" v-resize="resizeHandler">
-    <v-navigation-drawer :mini-variant.sync="mini" :width="menuWidth" :mini-variant-width="miniWidth" hide-overlay fixed permanent stateless touchless right app class="elevation-14 overflowhidden cursordefault navigationDrawer">
+    <v-navigation-drawer :mini-variant.sync="mini" :width="menuWidth" :mini-variant-width="miniWidth" hide-overlay fixed permanent stateless touchless right app class="elevation-14 overflowhidden cursordefault navigationDrawer" style="padding: 0 !important;">
       <router-view name="drawer"></router-view>
       <!-- <div class="close-button"><v-icon>close</v-icon></div> -->
     </v-navigation-drawer>
@@ -8,13 +8,13 @@
     <v-toolbar fixed app dense flat absolute style="z-index: 99 !important" class="transparent">
       <v-spacer></v-spacer>
       <v-tooltip left>
-        <v-btn v-show="sketchfabMode" slot="activator" class="elevation-0 close-button" fab outline small color="white white--text" @click="buttonHandler()"><v-icon>arrow_forward</v-icon></v-btn>
+        <v-btn v-show="sketchfabMode" slot="activator" class="elevation-0 close-button white white--text" style="right: -1px; top: -50px" fab outline small @click="buttonHandler()"><v-icon>arrow_forward</v-icon></v-btn>
         <span>Back to 2D Map</span>
       </v-tooltip>
 
 
       <transition name="fadeIn">
-      <v-toolbar-side-icon v-if="mini" class="white--text menu-icon" @click.stop="mini = !mini"></v-toolbar-side-icon>
+      <v-toolbar-side-icon v-if="mini" class="white--text menu-icon" @click.stop="mini = !mini" style="position: absolute !important;" ></v-toolbar-side-icon>
       <v-btn icon @click.native.stop="mini =!mini" class="white--text menu-icon" v-else>
       <v-icon class="white--text">close</v-icon>
       </v-btn>
@@ -50,7 +50,7 @@
     </v-content>
 
     
-    <v-footer app style="z-index: 2 !important">
+    <v-footer app style="z-index: 2 !important; background: transparent;">
       <div class="footer-logo noevents noselect">terroir</div>
       <img src="./assets/up_logo.svg" class="logo noevents cursordefault noselect"/><span class="white--text pl-2 noevents cursordefault noselect">2018</span>
 
@@ -165,17 +165,18 @@ export default {
 
       var bp = this.$vuetify.breakpoint.name
       // console.log(this.$vuetify.breakpoint)
-      if(bp =='xs'){
-        this.mini = false;
-      } else if(bp =='sm'){
-        this.mini = false;
-      } else if(bp =='md'){
-        this.mini = false;
-      } else if(bp =='lg'){
-        this.mini = false;
-      } else if(bp =='xl'){
-        this.mini = false;
-      }
+      // if(bp =='xs'){
+      //   this.mini = false;
+      // } else if(bp =='sm'){
+      //   this.mini = false;
+      // } else if(bp =='md'){
+      //   this.mini = false;
+      // } else if(bp =='lg'){
+      //   this.mini = false;
+      // } else if(bp =='xl'){
+      //   this.mini = false;
+      // }
+
     }, 100),
   // }
 
@@ -298,6 +299,7 @@ header span {
 .close-button{
   margin: 60px;
   top: 60px;
+  position: absolute !important;
 }
 
 // .navigationDrawer::after{
@@ -313,6 +315,7 @@ header span {
   position: absolute;
   top:33px;
   left: 35px;
+  z-index: 2 !important;
 }
 
 .slider-wrapper i{
@@ -326,7 +329,7 @@ header span {
   align-items: center;
   justify-content: flex-start;
   // position: absolute;
-  width: 250px;
+  // width: 250px;
   height: auto;
   // top: 34px;
   z-index: 99 !important;
@@ -337,7 +340,9 @@ header span {
 
 .slider-caption{
   color: white;
-  line-height: 0.9em;
+  line-height: 2em;
+  left: -9px;
+  position: relative;
 }
 
 </style>

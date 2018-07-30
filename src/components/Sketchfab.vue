@@ -363,7 +363,7 @@ export default {
 	align-items: center;
 	/*position: relative;*/
 	height: 100vh;
-  z-index: 3;
+  z-index: 2;
   left: 0;
   top: 0;
   position: absolute;

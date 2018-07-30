@@ -30,7 +30,7 @@
       <bottom-sheet class="bottomsheet" v-if="wineriesHere && !sketchfabMode && !soilMode"></bottom-sheet>
       </transition>
 
-      <div class="map-overlay" v-if="!blendmode"></div>
+      <div class="map-overlay" v-if="!blendmode" :style="{ width: sketchfabMode ? menuWidth +'px' : '100vw' }"></div>
 
       <!-- <div class="debug"><pre>{{debug}}</pre></div> -->
       <!-- <northstar></northstar> -->
@@ -130,13 +130,13 @@ export default {
 .map-overlay{
   pointer-events: none;
   position: absolute;
-  left: 0;
+  right: 0;
   top: 0;
-  width: 100vw;
   height: 100vh;
   background-color: #a82dae;
   mix-blend-mode: soft-light;
-  z-index: 4;
+  z-index: 2;
+
 }
 
 
