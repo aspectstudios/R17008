@@ -25,11 +25,19 @@
       <!-- <v-alert v-if="staging" :style="{'pointer-events': 'all', 'z-index': '99 !important', 'top':'-7px', 'width':'calc( 100%  - '+this.menuwidth+'px )', 'right': this.menuWidth+'px', 'text-align': 'right' }" :value="true" type="warning" class="black--text" dismissible>
       Warning: You are on our testing website! - please visit <a href="https://ahwr-3d.surge.sh">ahwr-3d.surge.sh</a>
     </v-alert> -->
+
+    <div class="app-loading" :style="{width: 'calc( 100vw - '+menuWidth+'px)'}">
+      <v-progress-circular
+            indeterminate
+            color="white"
+          ></v-progress-circular>
+    </div>
       <router-view></router-view>
       <v-dialog v-model="dialog" max-width="500px">
              <v-card>
                <v-card-text>
-                 <img src="./assets/terroir.svg" class="terroir-logo">
+                 <!-- <img src="./assets/terroir.svg" class="terroir-logo"> -->
+                 <div class="noevents noselect" style="font-family: 'CircularStdBold'; text-align: center; font-size: 10vw; color: #153a29;">terroir</div>
                  <div class="body">By Urban&amp;Public</div>
                  <div class="body">3D terrain aerial photo imagery by Nearmap Ltd.</div>
                </v-card-text>
@@ -224,7 +232,17 @@ body, html {
          url('./assets/fonts/CircularStdBold.ttf') format('truetype'),
 }
 
+.app-loading{
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height:100vh;
+  pointer-events: none;
+  top: 0;
+  left: 0;
 
+}
 .footer-logo{
   font-family: 'CircularStdBold';
   font-size: 5vw;
@@ -237,7 +255,7 @@ body, html {
 }
 
 .menu-icon{
-  position: absolute;
+  position: absolute !important;
   right: 0px;
   top: 0px;
   margin-right: 12px !important;
@@ -300,6 +318,7 @@ header span {
   margin: 60px;
   top: 60px;
   position: absolute !important;
+  
 }
 
 // .navigationDrawer::after{
