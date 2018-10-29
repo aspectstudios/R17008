@@ -1,6 +1,6 @@
 <template>
    <v-app id="inspire" v-resize="resizeHandler">
-    <v-navigation-drawer :mini-variant.sync="mini" :width="menuWidth" :mini-variant-width="miniWidth" hide-overlay fixed permanent stateless touchless right app class="elevation-14 overflowhidden cursordefault navigationDrawer" style="padding: 0 !important; max-height: 100vh">
+    <v-navigation-drawer :mini-variant.sync="mini" :width="menuWidth" :mini-variant-width="miniWidth" hide-overlay fixed permanent stateless touchless right app class="elevation-14 overflowhidden cursordefault navigationDrawer" style="padding: 0 !important; max-height: 100vh; height: 100%">
       <router-view name="drawer"></router-view>
       <!-- <div class="close-button"><v-icon>close</v-icon></div> -->
     </v-navigation-drawer>
@@ -27,13 +27,13 @@
     </v-alert> -->
 
     <div class="app-loading" :style="{width: 'calc( 100vw - '+menuWidth+'px)'}">
-      <v-progress-circular
+      <v-progress-circular v-if="!soilMode"
             indeterminate
             color="white"
           ></v-progress-circular>
     </div>
       <router-view v-if="wineries"></router-view>
-      <v-dialog v-model="dialog" max-width="500px">
+      <v-dialog v-model="dialog" width="auto">
              <v-card>
                <v-card-text>
                  <!-- <img src="./assets/terroir.svg" class="terroir-logo"> -->
@@ -97,7 +97,7 @@ export default {
     }
   },
   computed:{
-    ...Vuex.mapGetters(['miniWidth', 'menuWidth', 'sketchfabMode', 'wineries', '_map', '_mapmini', 'dialog', 'getExaggeration']),
+    ...Vuex.mapGetters(['miniWidth', 'menuWidth', 'sketchfabMode', 'wineries', '_map', '_mapmini', 'dialog', 'getExaggeration', 'soilMode']),
 
     staging: function(){
       var s = window.location.href.indexOf('staging') > -1 ? true : false
