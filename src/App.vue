@@ -1,6 +1,6 @@
 <template>
    <v-app id="inspire" v-resize="resizeHandler">
-    <v-navigation-drawer :mini-variant.sync="mini" :width="menuWidth" :mini-variant-width="miniWidth" hide-overlay fixed permanent stateless touchless right app class="elevation-14 overflowhidden cursordefault navigationDrawer" style="padding: 0 !important;">
+    <v-navigation-drawer :mini-variant.sync="mini" :width="menuWidth" :mini-variant-width="miniWidth" hide-overlay fixed permanent stateless touchless right app class="elevation-14 overflowhidden cursordefault navigationDrawer" style="padding: 0 !important; max-height: 100vh">
       <router-view name="drawer"></router-view>
       <!-- <div class="close-button"><v-icon>close</v-icon></div> -->
     </v-navigation-drawer>
@@ -32,7 +32,7 @@
             color="white"
           ></v-progress-circular>
     </div>
-      <router-view></router-view>
+      <router-view v-if="wineries"></router-view>
       <v-dialog v-model="dialog" max-width="500px">
              <v-card>
                <v-card-text>
@@ -101,7 +101,7 @@ export default {
 
     staging: function(){
       var s = window.location.href.indexOf('staging') > -1 ? true : false
-      console.log(s)
+      // console.log(s)
       if(s && this.snackbarstaging){
         return true
       } else{
@@ -118,7 +118,7 @@ export default {
     var data = db.ref('data')
     this.$store.dispatch('setDataRef', data )
     .then(response => {
-      console.log(this.wineries)
+      // console.log(this.wineries)
     })
 
 
