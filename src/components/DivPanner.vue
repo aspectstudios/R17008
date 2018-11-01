@@ -64,6 +64,7 @@ export default {
   components: {},
   data () {
     return {
+      tapped: false,
       images: [
 	  	{name: 'kuitpo', x: 415, y:1149 },
 	  	{name: 'macclesfield', x: 613, y:1168 },
@@ -120,7 +121,7 @@ export default {
 
   },
   methods:{
-  	...Vuex.mapMutations(['setCurrentRegion', 'setSoilMode']),
+  	...Vuex.mapMutations(['setCurrentRegion', 'setSoilMode', 'setSketchfabMode', 'toggleLaunch3D']),
 
   backgroundClick(){
   	this.setCurrentRegion('blank')
@@ -203,17 +204,26 @@ export default {
 
   },
   doubletapHandler(e){
-  	var s = this.scale * 1.5
-  	this.scale = Math.min(s, this.maxScale)
-  	this.oldScale = Math.min(s, this.maxScale)
+    // var s = this.scale * 1.5
+    console.log('doublel tapped')
+  	// this.scale = Math.min(s, this.maxScale)
+  	// this.oldScale = Math.min(s, this.maxScale)
+    
   },
   tapHandler(e){
   	// console.log(e)
   },
 
   clickHandler(name){
-  	this.setSoilMode(false)
-  	this.setCurrentRegion(name)
+    if((this.tapped == name) && (this.currentRegion)){
+        this.setSketchfabMode(true)
+        this.toggleLaunch3D(true)
+    } else{
+    	this.setSoilMode(false)
+    	this.setCurrentRegion(name)
+      this.tapped = name
+    }
+    
   }
 
   },
