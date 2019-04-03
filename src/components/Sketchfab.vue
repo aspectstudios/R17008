@@ -95,14 +95,14 @@ export default {
     getExaggeration: function(val){
       var self = this
       // console.log('exagg val', val)
-      this._api.getMatrix( 408, function( err, matrices ) {
+      this._api.getMatrix( 411, function( err, matrices ) {
           console.error(err)
             if(!err){
               var scaledMatrix = mat4.create();
               // console.log('matrices', matrices)
               // var scale = Number(leftValue);
               mat4.fromScaling(scaledMatrix, [1,Math.max(0.1,val*0.02), 1]);
-              self._api.setMatrix( 408, scaledMatrix );
+              self._api.setMatrix( 411, scaledMatrix );
             }
       });
 
@@ -194,7 +194,7 @@ export default {
   readyHandler(){
     var self = this
     
-    // this._api.getMatrix(408, function(err, matrices){
+    // this._api.getMatrix(411, function(err, matrices){
     //     if(!err){console.log(matrices)}
     // })
 
@@ -215,7 +215,7 @@ export default {
 
 
 
-    // this._api.hide(408) 
+    // this._api.hide(411) 
     // this._api.hide(436)
 
     
